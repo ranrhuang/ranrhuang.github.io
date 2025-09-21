@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Meta Data -->
+  <meta charset="utf-8">
+  <meta name="description"
+        content="SPFSplatV2: Efficient Self-Supervised Pose-Free 3D Gaussian Splatting from Sparse Views">
+  <meta name="keywords" content="NVS, 3D Gaussian Splatting, Self-supervised Learning">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="./static/image/icon_v3.png" type="image/png">
+  <title>SPFSplatV2: Efficient Self-Supervised Pose-Free 3D Gaussian Splatting from Sparse Views</title>
+
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+    gtag('config', 'G-PYVRSFMDRL');
+  </script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <!-- <link rel="icon" href="./static/images/favicon.svg"> -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    integrity="sha512-9teBqK5hnxZ5uwDiN1iB0ZrRVS+6X0AXOjBsyNazmzlMH6zWGiM05YIBgTdSV6zMZ2xZ1xi9wPNgInNq7EXp3Q=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+</head>
+
+<body>
+
+<!-- Title -->
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-full">
+      <div class="columns is-full">
+        <div class="column has-text-centered">
+          <!-- Icon + Title -->
+          <div class="columns is-vcentered is-centered">
+            <div class="column is-narrow" style="display: flex; align-items: center;">
+              <img src="./static/image/icon_v3.png" alt="Logo" style="height: 45px;">
+            </div>
+            <div class="column is-narrow" style="display: flex; align-items: center;">
+              <h1 style="
+                font-family: 'Bebas Neue', sans-serif;
+                font-size: 3rem;
+                font-weight: 900;
+                color: #0093FD;
+                margin: 0;
+                letter-spacing: 0.3px;">
+                <span style="font-weight: 900;">SPFSplatV2</span>
+              </h1>
+            </div>
+          </div>
+
+          <!-- Subtitle -->
+          <h2 class="subtitle is-4" style="font-size: 2.5rem;">
+            Efficient Self-Supervised Pose-Free 3D Gaussian Splatting <br> from Sparse Views
+          </h2>
+
+          <!-- Authors -->
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://ranrhuang.github.io/">Ranran Huang</a>,
+            </span>
+            <span class="author-block">
+              <a href="https://www.imperial.ac.uk/people/k.mikolajczyk">Krystian Mikolajczyk</a>
+            </span>
+          </div>
+
+          <!-- Institution -->
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">Imperial College London</span>
+          </div>
+
+          <!-- Highlight
+          <div class="is-size-5 publication-authors">
+            <span class="author-block" style="font-weight: 900; color: #E0713F;">
+              ICCV 2025 Highlight
+            </span>
+          </div> -->
+
+          <!-- Buttons -->
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- Paper -->
+              <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <!-- Code -->
+              <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code (Coming Soon)</span>
+                </a>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Optional additional spacing below -->
+  <div style="margin-bottom: -100px;"></div>
+</section>
+
+
+<!-- Teaser -->
+<section class="section">
+  <div class="container comparison-box">
+    <!-- Navigation buttons -->
+    <button class="nav-btn left-btn" aria-label="Scroll left">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    <button class="nav-btn right-btn" aria-label="Scroll right">
+      <i class="fas fa-chevron-right"></i>
+    </button>
+
+    <!-- Scrollable one-image-per-page row -->
+    <div class="scroll-window">
+      <div class="slide">
+        <video src="./static/video/acid_video.mp4" controls autoplay loop muted></video>
+        <div class="caption">
+          <p>
+            Qualitative comparison on ACID.
+          </p>
+        </div>
+      </div>
+
+      <div class="slide">
+        <video src="./static/video/re10k_video1.mp4" controls autoplay loop muted></video>
+        <div class="caption">
+          <p>
+          Qualitative comparison on RE10K.
+          </p>
+        </div>
+      </div>
+
+      <div class="slide">
+        <video src="./static/video/re10k_video2.mp4" controls autoplay loop muted></video>
+        <div class="caption">
+          <p>
+          Qualitative comparison on RE10K.
+          </p>
+        </div>
+      </div>
+
+      
+
+      <div class="slide">
+        <video src="./static/video/acid_video_cross.mp4" controls autoplay loop muted></video>
+        <div class="caption">
+          <p>
+            Qualitative comparison on RE10K -> ACID.
+          </p>
+        </div>
+      </div>
+
+      <div class="slide">
+        <video src="./static/video/dl3dv_video.mp4" controls autoplay loop muted></video>
+        <div class="caption">
+          <p>
+            Qualitative comparison on RE10K -> DL3DV.
+          </p>
+        </div>
+      </div>
+
+
+      <div class="slide">
+        <video src="./static/video/scannetpp_video.mp4" controls autoplay loop muted></video>
+        <div class="caption">
+          <p>
+            Qualitative comparison on RE10K -> ScanNet++.
+          </p>
+        </div>
+      </div>
+
+
+      <div class="slide">
+        <video src="./static/video/dtu_video1.mp4" controls autoplay loop muted></video>
+        <div class="caption">
+          <p>
+            Qualitative comparison on RE10K -> DTU.
+          </p>
+        </div>
+      </div>
+
+      
+    </div>
+  </div>
+
+  <!-- Teaser Navigation-->
+  <script>
+  document.querySelectorAll('.comparison-box').forEach(section => {
+    const scrollWindow = section.querySelector('.scroll-window');
+    const leftBtn = section.querySelector('.left-btn');
+    const rightBtn = section.querySelector('.right-btn');
+
+    let currentIndex = 0;
+    const slides = Array.from(scrollWindow.querySelectorAll('.slide'));
+
+    function scrollToIndex(index) {
+      if (index < 0) index = slides.length - 1;
+      if (index >= slides.length) index = 0;
+      currentIndex = index;
+
+      scrollWindow.scrollTo({
+        left: slides[index].offsetLeft,
+        behavior: 'smooth'
+      });
+    }
+
+    leftBtn.addEventListener('click', () => scrollToIndex(currentIndex - 1));
+    rightBtn.addEventListener('click', () => scrollToIndex(currentIndex + 1));
+  });
+  </script>
+</section>
+
+
+<!-- Abstract -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-full has-text-centered">
+      <div class="column is-full">
+        <h2 class="title is-3"style="font-size: 2.5rem; text-align: center">Abstract</h2>
+        <div class="content has-text-justified">
+          <!-- <figure class="image" style="margin-top: 1.5rem;">
+            <img src="./static/image/pipeline.svg" style="width: 60%; height: auto;">
+          </figure> -->
+          
+          <p style="font-size: 1.25rem;">
+            We introduce <b>SPFSplatV2</b>, an efficient feed-forward framework for 3D Gaussian splatting from sparse multi-view images, requiring no ground-truth poses during training and inference. It employs a shared feature extraction backbone, enabling simultaneous prediction of 3D Gaussian primitives and camera poses in a canonical space from unposed inputs. A masked attention mechanism is introduced to efficiently estimate target poses during training, while a reprojection loss enforces pixel-aligned Gaussian primitives, providing stronger geometric constraints.
+We further demonstrate the compatibility of our training framework with different reconstruction architectures, resulting in two model variants. Remarkably, despite the absence of pose supervision, our method achieves state-of-the-art performance in both in-domain and out-of-domain novel view synthesis, even under extreme viewpoint changes and limited image overlap, and surpasses recent methods that rely on geometric supervision for relative pose estimation. By eliminating dependence on ground-truth poses, our method offers the scalability to leverage larger and more diverse datasets.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Methodology -->
+<section class="section">
+  <div class="container is-full-widescreen">
+  <!-- <div class="container" style="max-width: 70%;"> -->
+    <div class="columns is-full has-text-centered">
+      <div class="column is-full">
+        <h2 class="title is-3"style="font-size: 2.5rem; text-align: center;">Methodology</h2>
+        <div class="content has-text-justified">
+          <figure class="image" style="margin-top: 1.5rem; text-align: center;">
+            <img src="./static/image/framework_v6.svg" style="width: 1200px; height: auto;">
+          </figure>
+          <!-- <div style="display: flex; justify-content: center; margin-top: 1.5rem;">
+            <video src="./static/video/pipeline.mp4" controls autoplay loop muted style="width: 100%; height: auto;"></video>
+          </div> -->
+          <p style="font-size: 1.25rem;">
+            <b>SPFSplatV2</b> employs a shared backbone with three specialized heads simultaneously predicts Gaussian centers, additional Gaussian parameters, and camera poses from unposed images in a canonical space, with the first input view as the reference. Encoder tokens, concatenated with a learnable pose token and an optional embedding of ground-truth intrinsics, are fed into the decoder, which employs masked attention to prevent context tokens from attending to target tokens, ensuring Gaussian reconstruction remains independent of target-view information. The 3D Gaussians are optimized via a rendering loss using the predicted target poses, while a reprojection loss enforces alignment between Gaussian centers and their corresponding pixels using the predicted context poses. By jointly optimizing Gaussians and camera poses, the pipeline enhances geometric consistency and improves reconstruction quality.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- Quantitative Results -->
+<section class="section">
+  <h2 class="title is-3" style="font-size: 2.5rem; text-align: center;">Quantitative Results</h2>
+  <div class="container comparison-box is-full-widescreen">
+    <!-- Navigation buttons -->
+    <button class="nav-btn left-btn" aria-label="Scroll left" id="table-left-btn">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    <button class="nav-btn right-btn" aria-label="Scroll right" id="table-right-btn">
+      <i class="fas fa-chevron-right"></i>
+    </button>
+
+    <div class="table-scroll-window">
+      <div class="table-scroll-window-slide">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th rowspan="2">Method</th>
+                <th colspan="3">Small</th>
+                <th colspan="3">Medium</th>
+                <th colspan="3">Large</th>
+                <th colspan="3">Average</th>
+              </tr>
+              <tr>
+                <th>PSNR↑</th><th>SSIM↑</th><th>LPIPS↓</th>
+                <th>PSNR↑</th><th>SSIM↑</th><th>LPIPS↓</th>
+                <th>PSNR↑</th><th>SSIM↑</th><th>LPIPS↓</th>
+                <th>PSNR↑</th><th>SSIM↑</th><th>LPIPS↓</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Pose-Required -->
+              <tr>
+                <td class="group-header" colspan="13"><i>Pose-Required</i></td>
+              </tr>
+              <tr>
+                <td>pixelSplat</td>
+                <td>20.277</td><td>0.719</td><td>0.265</td>
+                <td>23.726</td><td>0.811</td><td>0.180</td>
+                <td>27.152</td><td>0.880</td><td>0.121</td>
+                <td>23.859</td><td>0.808</td><td>0.184</td>
+              </tr>
+              <tr>
+                <td>MVSplat</td>
+                <td>20.371</td><td>0.725</td><td>0.250</td>
+                <td>23.808</td><td>0.814</td><td>0.172</td>
+                <td>27.466</td><td>0.885</td><td>0.115</td>
+                <td>24.012</td><td>0.812</td><td>0.175</td>
+              </tr>
+    
+              <!-- Supervised Pose-Free -->
+              <tr>
+                <td class="group-header" colspan="13"><i>Supervised Pose-Free</i></td>
+              </tr>
+              <tr>
+                <td>CoPoNeRF</td>
+                <td>17.393</td><td>0.585</td><td>0.462</td>
+                <td>18.813</td><td>0.616</td><td>0.392</td>
+                <td>20.464</td><td>0.652</td><td>0.318</td>
+                <td>18.938</td><td>0.619</td><td>0.388</td>
+              </tr>
+              <tr>
+                <td>Splatt3R</td>
+                <td>17.789</td><td>0.582</td><td>0.375</td>
+                <td>18.828</td><td>0.607</td><td>0.330</td>
+                <td>19.243</td><td>0.593</td><td>0.317</td>
+                <td>18.688</td><td>0.337</td><td>0.596</td>
+              </tr>
+              <tr>
+                <td>NoPoSplat<sup>*</sup></td>
+                <td>22.514</td><td>0.784</td><td>0.210</td>
+                <td>24.899</td><td>0.839</td><td>0.160</td>
+                <td>27.411</td><td>0.883</td><td>0.119</td>
+                <td>25.033</td><td>0.838</td><td>0.160</td>
+              </tr>
+    
+              <!-- Self-Supervised Pose-Free -->
+              <tr>
+                <td class="group-header" colspan="13"><i>Self-Supervised Pose-Free</i></td>
+              </tr>
+              <tr>
+                <td>SelfSplat</td>
+                <td>14.828</td><td>0.543</td><td>0.469</td>
+                <td>18.857</td><td>0.679</td><td>0.328</td>
+                <td>23.338</td><td>0.798</td><td>0.208</td>
+                <td>19.152</td><td>0.680</td><td>0.328</td>
+              </tr>
+              <tr>
+                <td>PF3plat</td>
+                <td>18.358</td><td>0.668</td><td>0.298</td>
+                <td>20.953</td><td>0.741</td><td>0.231</td>
+                <td>23.491</td><td>0.795</td><td>0.179</td>
+                <td>21.042</td><td>0.739</td><td>0.233</td>
+              </tr>
+              <tr>
+                <td>SPFSplat</td>
+                <td>22.897</td><td>0.792</td><td>0.201</td>
+                <td>25.334</td><td>0.847</td><td>0.153</td>
+                <td>27.947</td><td>0.894</td><td>0.110</td>
+                <td>25.484</td><td>0.847</td><td>0.153</td>
+              </tr>
+              <tr>
+                <td>SPFSplat<sup>*</sup></td>
+                <td>23.178</td><td>0.796</td><td>0.200</td>
+                <td>25.695</td><td>0.853</td><td>0.151</td>
+                <td>28.377</td><td>0.899</td><td>0.111</td>
+                <td>25.845</td><td>0.852</td><td>0.152</td>
+              </tr>
+              <tr>
+                <td><b>SPFSplatV2</b></td>
+                <td>23.123</td><td>0.800</td><td>0.195</td>
+                <td>25.542</td><td>0.853</td><td>0.149</td>
+                <td>28.143</td><td>0.897</td><td>0.110</td>
+                <td>25.693</td><td>0.853</td><td>0.149</td>
+              </tr>
+              <tr>
+                <td><b>SPFSplatV2<sup>*</sup></b></td>
+                <td><b>23.456</b></td><td><b>0.806</b></td><td>0.193</td>
+                <td><b>26.030</b></td><td><b>0.862</b></td><td>0.145</td>
+                <td><b>28.682</b></td><td><b>0.905</b></td><td>0.107</td>
+                <td><b>26.157</b></td><td><b>0.861</b></td><td>0.146</td>
+              </tr>
+              <tr>
+                <td><b>SPFSplatV2-L</b></td>
+                <td>23.138</td><td><u>0.804</u></td><td><u>0.184</u></td>
+                <td>25.518</td><td>0.856</td><td><u>0.136</u></td>
+                <td>28.081</td><td>0.899</td><td><u>0.099</u></td>
+                <td>25.668</td><td>0.855</td><td><u>0.137</u></td>
+              </tr>
+              <tr>
+                <td><b>SPFSplatV2-L<sup>*</sup></b></td>
+                <td><u>23.329</u></td><td><u>0.804</u></td><td><b>0.183</b></td>
+                <td><u>25.863</u></td><td><u>0.861</u></td><td><b>0.134</b></td>
+                <td><u>28.456</u></td><td><u>0.903</u></td><td><b>0.098</b></td>
+                <td><u>25.983</u></td><td><u>0.859</u></td><td><b>0.136</b></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="caption">
+          <p><strong>Table 1.</strong> Performance comparison of NVS on RE10K. The <b>best</b> and <u>second-best</u> results are highlighted. * denotes evaluation-time pose alignment (EPA) strategy.</p>
+          <p>Only the time for 3D Gaussian reconstruction is reported.</p>
+        </div>
+      </div>
+
+      <div class="table-scroll-window-slide">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th rowspan="2">Method</th>
+                <th colspan="3">Small</th>
+                <th colspan="3">Medium</th>
+                <th colspan="3">Large</th>
+                <th colspan="3">Average</th>
+              </tr>
+              <tr>
+                <th>PSNR↑</th><th>SSIM↑</th><th>LPIPS↓</th>
+                <th>PSNR↑</th><th>SSIM↑</th><th>LPIPS↓</th>
+                <th>PSNR↑</th><th>SSIM↑</th><th>LPIPS↓</th>
+                <th>PSNR↑</th><th>SSIM↑</th><th>LPIPS↓</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Pose-Required -->
+              <tr>
+                <td class="group-header" colspan="13"><i>Pose-Required</i></td>
+              </tr>
+              <tr>
+                <td>pixelSplat</td>
+                <td>22.088</td><td>0.655</td><td>0.284</td>
+                <td>25.525</td><td>0.777</td><td>0.197</td>
+                <td>28.527</td><td>0.854</td><td>0.139</td>
+                <td>25.889</td><td>0.780</td><td>0.194</td>
+              </tr>
+              <tr>
+                <td>MVSplat</td>
+                <td>21.412</td><td>0.640</td><td>0.290</td>
+                <td>25.150</td><td>0.772</td><td>0.198</td>
+                <td>28.457</td><td>0.854</td><td>0.137</td>
+                <td>25.561</td><td>0.775</td><td>0.195</td>
+              </tr>
+    
+              <!-- Supervised Pose-Free -->
+              <tr>
+                <td class="group-header" colspan="13"><i>Supervised Pose-Free</i></td>
+              </tr>
+              <tr>
+                <td>CoPoNeRF</td>
+                <td>18.651</td><td>0.551</td><td>0.485</td>
+                <td>20.654</td><td>0.595</td><td>0.418</td>
+                <td>22.654</td><td>0.652</td><td>0.343</td>
+                <td>20.950</td><td>0.606</td><td>0.406</td>
+              </tr>
+              <tr>
+                <td>Splatt3R</td>
+                <td>17.419</td><td>0.501</td><td>0.434</td>
+                <td>18.257</td><td>0.514</td><td>0.405</td>
+                <td>18.134</td><td>0.508</td><td>0.395</td>
+                <td>18.060</td><td>0.510</td><td>0.407</td>
+              </tr>
+              <tr>
+                <td>NoPoSplat<sup>*</sup></td>
+                <td>23.087</td><td>0.685</td><td>0.258</td>
+                <td>25.624</td><td>0.777</td><td>0.193</td>
+                <td>28.043</td><td>0.841</td><td>0.144</td>
+                <td>25.961</td><td>0.781</td><td>0.189</td>
+              </tr>
+    
+              <!-- Self-Supervised Pose-Free -->
+              <tr>
+                <td class="group-header" colspan="13"><i>Self-Supervised Pose-Free</i></td>
+              </tr>
+              <tr>
+                <td>SelfSplat</td>
+                <td>18.301</td><td>0.568</td><td>0.408</td>
+                <td>21.375</td><td>0.676</td><td>0.314</td>
+                <td>25.219</td><td>0.792</td><td>0.214</td>
+                <td>22.089</td><td>0.694</td><td>0.298</td>
+              </tr>
+              <tr>
+                <td>PF3plat</td>
+                <td>18.112</td><td>0.537</td><td>0.376</td>
+                <td>20.732</td><td>0.615</td><td>0.307</td>
+                <td>23.607</td><td>0.710</td><td>0.228</td>
+                <td>21.206</td><td>0.632</td><td>0.293</td>
+              </tr>
+              <tr>
+                <td>SPFSplat</td>
+                <td>22.667</td><td>0.665</td><td>0.262</td>
+                <td>25.620</td><td>0.773</td><td>0.192</td>
+                <td>28.607</td><td>0.856</td><td>0.136</td>
+                <td>26.070</td><td>0.781</td><td>0.186</td>
+              </tr>
+              <tr>
+                <td>SPFSplat<sup>*</sup></td>
+                <td><u>23.676</u></td><td><u>0.708</u></td><td>0.243</td>
+                <td>26.351</td><td><u>0.801</u></td><td>0.182</td>
+                <td>29.170</td><td><u>0.870</u></td><td>0.131</td>
+                <td>26.796</td><td><u>0.807</u></td><td>0.176</td>
+              </tr>
+              <tr>
+                <td><b>SPFSplatV2</b></td>
+                <td>22.944</td><td>0.679</td><td>0.255</td>
+                <td>25.849</td><td>0.784</td><td>0.187</td>
+                <td>28.766</td><td>0.862</td><td>0.133</td>
+                <td>26.284</td><td>0.791</td><td>0.182</td>
+              </tr>
+              <tr>
+                <td><b>SPFSplatV2<sup>*</sup></b></td>
+                <td>23.635</td><td>0.700</td><td>0.247</td>
+                <td><u>26.356</u></td><td>0.798</td><td>0.182</td>
+                <td><b>29.223</b></td><td><b>0.871</b></td><td>0.129</td>
+                <td><u>26.809</u></td><td>0.804</td><td>0.176</td>
+              </tr>
+              <tr>
+                <td><b>SPFSplatV2-L</b></td>
+                <td>23.640</td><td>0.706</td><td><u>0.225</u></td>
+                <td>26.272</td><td><u>0.801</u></td><td><u>0.166</u></td>
+                <td>28.938</td><td>0.868</td><td><u>0.120</u></td>
+                <td>26.674</td><td>0.806</td><td><u>0.162</u></td>
+              </tr>
+              <tr>
+                <td><b>SPFSplatV2-L<sup>*</sup></b></td>
+                <td><b>23.937</b></td><td><b>0.710</b></td><td><b>0.224</b></td>
+                <td><b>26.489</b></td><td><b>0.803</b></td><td><b>0.165</b></td>
+                <td><u>29.188</u></td><td><b>0.871</b></td><td><b>0.118</b></td>
+                <td><b>26.917</b></td><td><b>0.809</b></td><td><b>0.160</b></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="caption">
+          <p><strong>Table 2.</strong> Performance comparison of NVS on the ACID dataset. The <b>best</b> and <u>second best</u> results are highlighted. * denotes evaluation-time pose alignment (EPA) strategy.</p>
+        </div>
+      </div>
+
+      <div class="table-scroll-window-slide">
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th rowspan="2">Method</th>
+                <th colspan="3">ACID</th>
+                <th colspan="3">DTU</th>
+                <th colspan="3">DL3DV</th>
+                <th colspan="3">ScanNet++</th>
+              </tr>
+              <tr>
+                <th>PSNR↑</th><th>SSIM↑</th><th>LPIPS↓</th>
+                <th>PSNR↑</th><th>SSIM↑</th><th>LPIPS↓</th>
+                <th>PSNR↑</th><th>SSIM↑</th><th>LPIPS↓</th>
+                <th>PSNR↑</th><th>SSIM↑</th><th>LPIPS↓</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Pose-Required -->
+              <tr>
+                <td class="group-header" colspan="13"><i>Pose-Required</i></td>
+              </tr>
+              <tr>
+                <td>pixelSplat</td>
+                <td>25.477</td><td>0.770</td><td>0.207</td>
+                <td>15.067</td><td>0.539</td><td>0.341</td>
+                <td>18.688</td><td>0.582</td><td>0.354</td>
+                <td>18.422</td><td>0.720</td><td>0.278</td>
+              </tr>
+              <tr>
+                <td>MVSplat</td>
+                <td>25.525</td><td>0.773</td><td>0.199</td>
+                <td>14.542</td><td>0.537</td><td>0.324</td>
+                <td>17.786</td><td>0.545</td><td>0.357</td>
+                <td>17.138</td><td>0.687</td><td>0.297</td>
+              </tr>
+    
+              <!-- Supervised Pose-Free -->
+              <tr>
+                <td class="group-header" colspan="13"><i>Supervised Pose-Free</i></td>
+              </tr>
+              <tr>
+                <td>NoPoSplat<sup>*</sup></td>
+                <td>25.764</td><td>0.776</td><td>0.199</td>
+                <td>17.899</td><td>0.629</td><td>0.279</td>
+                <td>19.031</td><td>0.560</td><td>0.365</td>
+                <td>22.136</td><td>0.798</td><td>0.232</td>
+              </tr>
+    
+              <!-- Self-Supervised Pose-Free -->
+              <tr>
+                <td class="group-header" colspan="13"><i>Self-Supervised Pose-Free</i></td>
+              </tr>
+              <tr>
+                <td>SelfSplat</td>
+                <td>22.204</td><td>0.686</td><td>0.316</td>
+                <td>13.249</td><td>0.434</td><td>0.441</td>
+                <td>15.047</td><td>0.410</td><td>0.498</td>
+                <td>13.277</td><td>0.538</td><td>0.534</td>
+              </tr>
+              <tr>
+                <td>PF3plat</td>
+                <td>20.726</td><td>0.610</td><td>0.308</td>
+                <td>12.972</td><td>0.407</td><td>0.464</td>
+                <td>15.773</td><td>0.458</td><td>0.417</td>
+                <td>16.471</td><td>0.688</td><td>0.303</td>
+              </tr>
+              <tr>
+                <td>SPFSplat</td>
+                <td>25.965</td><td>0.781</td><td>0.190</td>
+                <td>16.550</td><td>0.579</td><td>0.270</td>
+                <td>19.172</td><td>0.573</td><td>0.315</td>
+                <td>19.971</td><td>0.738</td><td>0.265</td>
+              </tr>
+              <tr>
+                <td>SPFSplat<sup>*</sup></td>
+                <td><u>26.697</u></td><td><b>0.806</b></td><td>0.181</td>
+                <td>18.297</td><td>0.660</td><td>0.255</td>
+                <td>19.494</td><td>0.574</td><td>0.319</td>
+                <td>22.312</td><td>0.793</td><td>0.243</td>
+              </tr>
+              <tr>
+                <td><b>SPFSplatV2</b></td>
+                <td>26.220</td><td>0.789</td><td>0.185</td>
+                <td>16.793</td><td>0.584</td><td>0.265</td>
+                <td>19.439</td><td>0.584</td><td>0.304</td>
+                <td>20.919</td><td>0.771</td><td>0.243</td>
+              </tr>
+              <tr>
+                <td><b>SPFSplatV2<sup>*</sup></b></td>
+                <td><b>26.802</b></td><td><u>0.805</u></td><td>0.179</td>
+                <td><u>18.506</u></td><td><u>0.663</u></td><td>0.246</td>
+                <td><u>19.978</u></td><td>0.607</td><td>0.302</td>
+                <td><u>22.776</u></td><td><u>0.812</u></td><td>0.227</td>
+              </tr>
+              <tr>
+                <td><b>SPFSplatV2-L</b></td>
+                <td>26.361</td><td>0.796</td><td><u>0.169</u></td>
+                <td>17.739</td><td>0.653</td><td><b>0.228</b></td>
+                <td>19.743</td><td><u>0.613</u></td><td><b>0.277</b></td>
+                <td>21.796</td><td>0.811</td><td><u>0.200</u></td>
+              </tr>
+              <tr>
+                <td><b>SPFSplatV2-L<sup>*</sup></b></td>
+                <td>26.680</td><td>0.802</td><td><b>0.166</b></td>
+                <td><b>19.316</b></td><td><b>0.671</b></td><td><u>0.229</u></td>
+                <td><b>20.108</b></td><td><b>0.615</b></td><td><u>0.279</u></td>
+                <td><b>23.072</b></td><td><b>0.820</b></td><td><b>0.199</b></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="caption">
+          <p><strong>Table 3.</strong> Cross-dataset generalization on the NVS task. All methods are trained on RE10K and evaluated in a zero-shot setting on ACID and DTU. </p>
+          <p>The <b>best</b> and <u>second best</u> results are highlighted. * denotes evaluation-time pose alignment (EPA) strategy.</p>
+        </div>
+      </div>
+
+      <div class="table-scroll-window-slide">
+        <div class="table-scroll" >
+          <table>
+            <thead>
+              <tr>
+                <th rowspan="2">Method</th>
+                <th colspan="3">RE10K</th>
+                <th colspan="3">ACID</th>
+                <th colspan="3">DL3DV</th>
+                <th colspan="3">ScanNet++</th>
+              </tr>
+              <tr>
+                <th>5&deg;&uarr;</th>
+                <th>10&deg;&uarr;</th>
+                <th>20&deg;&uarr;</th>
+                <th>5&deg;&uarr;</th>
+                <th>10&deg;&uarr;</th>
+                <th>20&deg;&uarr;</th>
+                <th>5&deg;&uarr;</th>
+                <th>10&deg;&uarr;</th>
+                <th>20&deg;&uarr;</th>
+                <th>5&deg;&uarr;</th>
+                <th>10&deg;&uarr;</th>
+                <th>20&deg;&uarr;</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- SfM -->
+              <!-- <tr class="has-background-light"><td colspan="13"><em>SfM</em></td></tr> -->
+              <td class="group-header" colspan="13"><i>SfM</i></td>
+              <tr>
+                <td>SP + SG</td><td>0.234</td><td>0.406</td><td>0.569</td>
+                <td>0.228</td><td>0.363</td><td>0.500</td>
+                <td>0.224</td><td>0.372</td><td>0.492</td>
+                <td>0.087</td><td>0.151</td><td>0.248</td>
+              </tr>
+              <tr>
+                <td>DUSt3R</td><td>0.336</td><td>0.541</td><td>0.702</td>
+                <td>0.118</td><td>0.279</td><td>0.470</td>
+                <td>0.275</td><td>0.490</td><td>0.686</td>
+                <td>0.109</td><td>0.284</td><td>0.500</td>
+              </tr>
+              <tr>
+                <td>MASt3R</td><td>0.281</td><td>0.494</td><td>0.672</td>
+                <td>0.138</td><td>0.312</td><td>0.507</td>
+                <td>0.332</td><td>0.593</td><td>0.772</td>
+                <td>0.139</td><td>0.336</td><td>0.549</td>
+              </tr>
+              <tr>
+                <td>VGGT</td><td>0.257</td><td>0.474</td><td>0.658</td>
+                <td>0.142</td><td>0.304</td><td>0.486</td>
+                <td>0.356</td><td><u>0.609</u></td><td><b>0.784</b></td>
+                <td>0.156</td><td>0.311</td><td>0.514</td>
+              </tr>
+
+              <!-- Pose-Free View Synthesis -->
+              <!-- <tr class="has-background-light"><td colspan="13"><em>Pose-Free View Synthesis</em></td></tr> -->
+              <td class="group-header" colspan="13"><i>Pose-Free View Synthesis</i></td>
+              <tr>
+                <td>NoPoSplat</td>
+                <td>0.571</td><td>0.727</td><td>0.833</td>
+                <td>0.335</td><td>0.496</td><td>0.644</td>
+                <td><b>0.470</b></td><td><b>0.646</b></td><td><u>0.762</u></td>
+                <td><b>0.207</b></td><td><b>0.403</b></td><td><b>0.641</b></td>
+              </tr>
+              <tr>
+                <td>PF3plat</td>
+                <td>0.187</td><td>0.398</td><td>0.613</td>
+                <td>0.060</td><td>0.165</td><td>0.340</td>
+                <td>0.118</td><td>0.281</td><td>0.479</td>
+                <td>0.058</td><td>0.204</td><td>0.415</td>
+              </tr>
+              <tr>
+                <td>SPFSplat</td>
+                <td>0.617</td><td>0.755</td><td>0.845</td>
+                <td>0.364</td><td>0.520</td><td>0.662</td>
+                <td>0.283</td><td>0.461</td><td>0.622</td>
+                <td>0.098</td><td>0.188</td><td>0.374</td>
+              </tr>
+              <tr>
+                <td>SPFSplat (PnP)</td>
+                <td>0.613</td><td>0.754</td><td>0.845</td>
+                <td>0.355</td><td>0.516</td><td>0.658</td>
+                <td>0.279</td><td>0.464</td><td>0.626</td>
+                <td>0.120</td><td>0.226</td><td>0.408</td>
+              </tr>
+              <tr>
+                <td><b>SPFSplatV2</b></td>
+                <td>0.638</td><td>0.776</td><td>0.863</td>
+                <td>0.387</td><td>0.541</td><td>0.672</td>
+                <td>0.369</td><td>0.534</td><td>0.694</td>
+                <td>0.144</td><td>0.281</td><td>0.487</td>
+              </tr>
+              <tr>
+                <td><b>SPFSplatV2 (PnP)</b></td>
+                <td>0.641</td><td>0.777</td><td><u>0.864</u></td>
+                <td>0.374</td><td>0.533</td><td>0.667</td>
+                <td>0.375</td><td>0.542</td><td>0.700</td>
+                <td>0.111</td><td>0.250</td><td>0.463</td>
+              </tr>
+              <tr>
+                <td><b>SPFSplatV2-L</b></td>
+                <td><u>0.645</u></td><td><u>0.780</u></td><td><u>0.864</u></td>
+                <td><b>0.379</b></td><td><b>0.539</b></td><td><b>0.671</b></td>
+                <td>0.420</td><td>0.582</td><td>0.711</td>
+                <td><u>0.184</u></td><td><u>0.400</u></td><td><u>0.630</u></td>
+              </tr>
+              <tr>
+                <td><b>SPFSplatV2-L (PnP)</b></td>
+                <td><b>0.657</b></td><td><b>0.786</b></td><td><b>0.867</b></td>
+                <td><u>0.375</u></td><td><u>0.535</u></td><td><u>0.668</u></td>
+                <td><u>0.429</u></td><td>0.587</td><td>0.716</td>
+                <td>0.183</td><td><u>0.400</u></td><td>0.627</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="caption">
+          <p><strong>Table 4. </strong>Pose estimation performance on RE10K, ACID, DL3DV, and ScanNet++ datasets. We use the model trained only on RE10K for all splat-based methods.</p>
+          <p>The <b>best</b> and <u>second best</u> results are highlighted.</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-bottom: -50px;"></div>
+  </div>
+
+  <!-- Table Navigation -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const scrollWindowTable = document.querySelector(".table-scroll-window");
+      const slides = Array.from(scrollWindowTable.querySelectorAll(".table-scroll-window-slide"));
+      const leftBtnTable = document.getElementById("table-left-btn");
+      const rightBtnTable = document.getElementById("table-right-btn");
+
+      let currentIndex = 0;
+      const totalSlides = slides.length;
+
+      function scrollToIndex(index, smooth = true) {
+        if (index < 0) index = totalSlides - 1;
+        if (index >= totalSlides) index = 0;
+        currentIndex = index;
+
+        scrollWindowTable.scrollTo({
+          left: slides[index].offsetLeft,
+          behavior: smooth ? "smooth" : "auto"
+        });
+      }
+
+      rightBtnTable.addEventListener("click", () => {
+        scrollToIndex(currentIndex + 1);
+      });
+
+      leftBtnTable.addEventListener("click", () => {
+        scrollToIndex(currentIndex - 1);
+      });
+    });
+  </script>
+</section>
+
+
+<!-- Qualitative Results -->
+<section class="section">
+  <h2 class="title is-3" style="font-size: 2.5rem; text-align: center;">Qualitative Results</h2>
+  <div class="container comparison-box is-full-widescreen">
+    <button class="nav-btn left-btn image-left-btn" aria-label="Scroll left">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    <button class="nav-btn right-btn image-right-btn" aria-label="Scroll right">
+      <i class="fas fa-chevron-right"></i>
+    </button>
+
+    <div class="scroll-window image-scroll-window">
+      <div class="slide">
+        <image src="./static/image/paper_images_less.svg" style="width: 100%; height: auto;"></image>
+        <div class="caption">
+          <p>Qualitative comparison on RE10K (top three rows) and ACID (bottom three rows).</p>
+        </div>
+      </div>
+   
+      <div class="slide">
+        <image src="./static/image/cross_images.svg" style="width: 100%; height: auto;"></image>
+        <div class="caption">
+          <p> All methods are trained on RE10K and evaluated on ACID and DTU, DL3DV, and ScanNet++ (from top to bottom).</p>
+        </div>
+
+       
+      </div>
+
+      <div class="slide">
+        <image src="./static/image/3d_vis.png" style="width: 100%; height: auto;"></image>
+        <div class="caption">
+          <p>Qualitative comparisons of 3D Gaussians and rendered results.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Image Navigation-->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const scrollWindowImage = document.querySelector(".image-scroll-window");
+      const leftBtnImage = document.querySelector(".image-left-btn");
+      const rightBtnImage = document.querySelector(".image-right-btn");
+
+      let currentIndex = 0;
+      const slides = Array.from(scrollWindowImage.querySelectorAll(".slide"));
+
+      function scrollToIndex(index) {
+        if (index < 0) index = slides.length - 1;
+        if (index >= slides.length) index = 0;
+        currentIndex = index;
+
+        scrollWindowImage.scrollTo({
+          left: slides[index].offsetLeft,
+          behavior: "smooth"
+        });
+      }
+
+      leftBtnImage.addEventListener("click", () => scrollToIndex(currentIndex - 1));
+      rightBtnImage.addEventListener("click", () => scrollToIndex(currentIndex + 1));
+    });
+  </script>
+</section>
+
+
+
+<!-- Reference -->
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@article{huang2025spfsplat,
+      title={SPFSplatV2: Efficient Self-Supervised Pose-Free 3D Gaussian Splatting from Sparse Views},
+      author={Huang, Ranran and Mikolajczyk, Krystian},
+      journal={},
+      year={2025}
+    }</code></pre>
+  </div>
+</section>
+
+
+<!-- Footer -->
+<footer class="footer" style="background-color: #f5f5f5; padding: 2rem 1.5rem;">
+  <div class="container">
+   
+
+    <div class="columns is-centered">
+      <div class="column is-12">
+        <div class="content has-text-centered">
+          <p>
+            This website is borrowed from 
+            <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a>, licensed under a 
+            <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
