@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="NAS3R">
+  <meta name="keywords" content="3DGS, Pose-free, Prior-free, Novel view synthesis, Pose estimation">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VicaSplat</title>
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-PYVRSFMDRL');
+  </script>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+  
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+  
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <!-- <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+  integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+  crossorigin="anonymous"
+  /> -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+  <script src="./static/js/video_comparison.js"></script>
+</head>
+<body>
+
+  <!-- <h1 style="font-size: 2.5em; color: #ff6347; font-weight: bold; text-align: center;">
+    No <span style="color: #1e90ff;">Pose</span>, No <span style="color: #32cd32;">Problem</span>:
+</h1>
+<h2 style="text-align: center; margin-top: -10px;">
+    Surprisingly Simple 3D Gaussian Splats from Sparse Unposed Images
+</h2> -->
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <!-- Icon + Title -->
+
+          <!-- <h1 class="title is-1 publication-title"><span style="color: #ff6347;">No</span> <span style="color: #1e90ff;">Pose</span>, <span style="color: #ff6347;">No</span> <span style="color: #1e90ff;">Problem</span> <img src="static/images/icon.svg" width="50" style="position: relative; top: 4px;"> </h1> -->
+          <div class="publication-title" style="font-family: 'Google Sans', sans-serif; font-size: 45px; font-weight: 600; line-height: 1; margin-bottom: 0.75rem; display: flex; align-items: center; justify-content: center; gap: 12px; color: #269CD5;">
+            <img src="./static/images/icon.png" alt="Logo" style="height: 100px; width: auto;">
+            <span>From None to All</span>
+          </div>
+          <h2 class="title is-3 publication-title">Self-Supervised 3D Reconstruction via Novel View Synthesis</h2>
+          <h2 class="title is-4 publication-title"> CVPR 2026</h2>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://ranrhuang.github.io/">Ranran Huang</a>,</span>
+            <span class="author-block">
+              <a href="https://github.com/Roldbach/">Weixun Luo</a>,</span>
+            <span class="author-block">
+              <a href="https://yebulabula.github.io/">Ye Mao</a>,
+            </span>
+            <span class="author-block">
+              <a href="https://www.imperial.ac.uk/people/k.mikolajczyk">Krystian Mikolajczyk</a>
+            </span>
+            
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">Imperial College London</span> &nbsp;&nbsp;&nbsp;&nbsp;
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href=""
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://github.com/ranrhuang/NAS3R"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- <section class="hero teaser">
+  <div class="container is-max-desktop">
+    <div class="hero-body">
+      <div class="content has-text-justified">
+        Can a pose-free generalizable reconstruction model surpass pose-required methods in NVS? Our answer is yes! <br>
+        Can a model trained without GT depth or matching loss surpass SOTA methods in pose estimation? Our answer is yes!
+      </div>
+    </div>
+  </div>
+</section> -->
+
+<!-- <section class="hero is-light is-small has-text-centered">
+  <div class="hero-body">
+    <div class="container">
+      <img src="./static/images/teaser.jpg">
+
+    </div>
+  </div>
+</section> -->
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <div class="content has-text-justified">
+          <img src="./static/images/teaser.jpg">
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- <section class="hero is-light is-small has-text-centered"> -->
+<section class="hero has-text-centered">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+      <!-- <div class="column is-full-width"> -->
+        <h2 class="title is-3">Abstract</h2>
+        <section class="hero is-light is-small has-text-centered">
+        <div class="hero-body">
+        <div class="content has-text-justified">
+          <!-- <img src="./static/images/teaser.jpg"> -->
+          We introduce <strong>NAS3R</strong>, a self-supervised feed-forward framework that jointly learns explicit 3D geometry and camera parameters with no ground-truth annotations and no pretrained priors. During training, NAS3R reconstructs 3D Gaussians from uncalibrated and unposed context views and renders target views using its self-predicted camera parameters, enabling self-supervised training from 2D photometric supervision. To ensure stable convergence, NAS3R integrates reconstruction and camera prediction within a shared transformer backbone regulated by masked attention, and adopts a depth-based Gaussian formulation that facilitates well-conditioned optimization. The framework is compatible with state-of-the-art supervised 3D reconstruction architectures and can incorporate pretrained priors or intrinsic information when available. Extensive experiments show that NAS3R achieves superior results to other self-supervised methods, establishing a scalable and geometry-aware paradigm for 3D reconstruction from unconstrained data.
+        </div>
+        </div>
+        </section>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+
+    <!-- Paper video. -->
+    <!-- <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Video</h2>
+        <div class="publication-video">
+          <iframe src="https://www.youtube.com/embed/MrKrnHhk8IA?rel=0&amp;showinfo=0"
+                  frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div> -->
+    <!--/ Paper video. -->
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Method Overview</h2>
+        <div class="content has-text-justified">
+          <img src="./static/images/overview.jpg">
+
+          <p><strong>Overview of NAS3R</strong>. Unconstrained images are patchified into visual tokens and concatenated with a learnable camera token for camera prediction. A masked decoder regulates cross-view interactions and prevents target-to-context leakage. Refined context tokens are then processed by the Gaussian head to predict Gaussian parameters, while a depth head estimates depth maps that are lifted into 3D Gaussian centers using the predicted context poses. The predicted target poses are finally used to render novel views, providing photometric supervision for end-to-end training.</p>
+          
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+<!-- <section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Reconstructed 3D Gaussians and Predicted Cameras</h2>
+        <div class="content has-text-justified">
+          <img src="./static/images/group1.png">
+          <div class="columns is-1 is-multiline is-mobile">
+            <div class="column pb-0 mb-0 is-one-third">
+              <div style="text-align: center;">
+                <a target="_blank"
+                href="./viewer/index.html?is_object=false&url=https://huggingface.co/datasets/lzq49/VicaSplat/resolve/main/gaussians/586004f337ead821.ply">
+                3DGS Viewer</a>
+              </div>
+            </div>
+
+            <div class="column pb-0 mb-0 is-one-third">
+              <div style="text-align: center;">
+                <a target="_blank"
+                href="./viewer/index.html?is_object=false&url=https://huggingface.co/datasets/lzq49/VicaSplat/resolve/main/gaussians/9d496b6788c0f149.ply">
+                3DGS Viewer</a>
+              </div>
+            </div>
+
+            <div class="column pb-0 mb-0 is-one-third">
+              <div style="text-align: center;">
+                <a target="_blank"
+                href="./viewer/index.html?is_object=false&url=https://huggingface.co/datasets/lzq49/VicaSplat/resolve/main/gaussians/8debcd56accec5c3.ply">
+                3DGS Viewer</a>
+              </div>
+            </div>
+          </div>
+      
+        </div>
+
+        <div class="content has-text-justified">
+          <img src="./static/images/group2.png">
+          <div class="columns is-1 is-multiline is-mobile">
+            <div class="column pb-0 mb-0 is-one-third">
+              <div style="text-align: center;">
+                <a target="_blank"
+                href="./viewer/index.html?is_object=false&url=https://huggingface.co/datasets/lzq49/VicaSplat/resolve/main/gaussians/9e561f2486d0afb6.ply">
+                3DGS Viewer</a>
+              </div>
+            </div>
+
+            <div class="column pb-0 mb-0 is-one-third">
+              <div style="text-align: center;">
+                <a target="_blank"
+                href="./viewer/index.html?is_object=false&url=https://huggingface.co/datasets/lzq49/VicaSplat/resolve/main/gaussians/d951d621a1ae48a0.ply">
+                3DGS Viewer</a>
+              </div>
+            </div>
+
+            <div class="column pb-0 mb-0 is-one-third">
+              <div style="text-align: center;">
+                <a target="_blank"
+                href="./viewer/index.html?is_object=false&url=https://huggingface.co/datasets/lzq49/VicaSplat/resolve/main/gaussians/df2eb6835b59491f.ply">
+                3DGS Viewer</a>
+              </div>
+            </div>
+          </div>
+      
+        </div>
+  
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="hero teaser">
+  <div class="container is-max-desktop">
+    <h2 class="title is-3">
+      <center>More Novel View Synthesis Results </center>
+    </h2>
+    <div class="hero-body">
+        <div class="column pb-0 mb-0 has-text-centered">
+          <video id="teaser" autoplay muted loop playsinline controls  height="100%">
+            <source
+              src="./static/videos/video1.mp4"
+              type="video/mp4">
+          </video>
+        </div>
+        
+        <div class="column pb-0 mb-0 has-text-centered">
+          <video id="teaser" autoplay muted loop playsinline controls  height="100%">
+            <source
+              src="./static/videos/video2.mp4"
+              type="video/mp4">
+          </video>
+        </div>
+
+      
+
+
+    </div>
+
+  </div>
+</section>
+
+
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@article{huang2026nas3r,
+      title   = {From None to All: Self-Supervised 3D Reconstruction via Novel View Synthesis},
+      author  = {Ranran Huang and Weixun Luo and Ye Mao and Krystian Mikolajczyk},
+      journal = {arXiv preprint arXiv:},
+      year    = {2026}
+    }
+  </code></pre>
+  </div>
+</section> -->
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This website is licensed under a <a rel="license"
+                                                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
+            Commons Attribution-ShareAlike 4.0 International License</a>.
+          </p>
+          <p>
+            Website source code based on the <a rel="nerfies" href="https://nerfies.github.io/">Nerfies</a> project page
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="http://code.jquery.com/jquery.js"></script>
+
+<!-- Fancybox -->
+<script src="fancybox/fancybox.umd.js"></script>
+<script>
+  Fancybox.bind("[data-fancybox]", {
+    infinite: false,
+    Thumbs: {
+      autoStart: false,
+    },
+  });
+</script>
+
+<!-- Javascript Functions -->
+<script type="text/javascript">
+  let slideIndex = [1, 1, 1, 1, 1];
+  let slideId = 0;
+  showSlides(slideId, slideIndex[slideId]);
+  showSlides(1, slideIndex[1]);
+  showSlides(2, slideIndex[2]);
+  showSlides(3, slideIndex[3]);
+  showSlides(4, slideIndex[4]);
+
+  // Next/previous controls
+  function plusSlides(id, n) {
+    showSlides(id, (slideIndex[id] += n));
+  }
+
+  // Thumbnail image controls
+  function currentSlide(id, n) {
+    showSlides(id, (slideIndex[id] = n));
+  }
+
+  function showSlides(id, n) {
+    let i;
+    let slides = document.getElementsByClassName("mySlides" + id);
+    let dots = document.getElementsByClassName("dot" + id);
+    if (n > slides.length) {
+      slideIndex[id] = 1;
+    }
+    if (n < 1) {
+      slideIndex[id] = slides.length;
+    }
+    for (i = 0; i < slides.length; i++) {
+      slides[i].style.display = "none";
+    }
+    for (i = 0; i < dots.length; i++) {
+      dots[i].className = dots[i].className.replace(" active", "");
+    }
+    slides[slideIndex[id] - 1].style.display = "block";
+    dots[slideIndex[id] - 1].className += " active";
+  }
+
+  // Automatic slideshow
+  setInterval(() => {
+    plusSlides(0, 1);
+  }, 150000); // Change image every 5 seconds
+</script>
+
+<section class="section" style="text-align: center; padding: 3rem 0;">
+  <p style="font-size: 1.5rem; font-weight: 600; color: #888; font-family: 'Google Sans', sans-serif;">🚧 Under Reconstruction 🚧</p>
+</section>
+
+</body>
+</html>
