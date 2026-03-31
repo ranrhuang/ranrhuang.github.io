@@ -6,7 +6,8 @@
         content="NAS3R">
   <meta name="keywords" content="3DGS, Pose-free, Prior-free, Novel view synthesis, Pose estimation">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>VicaSplat</title>
+  <link rel="icon" href="./static/images/icon.png" type="image/png">
+  <title>NAS3R</title>
 
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
@@ -35,6 +36,7 @@
   <link rel="stylesheet"
         href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
   <!-- <link
   rel="stylesheet"
   href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
@@ -65,8 +67,8 @@
           <!-- Icon + Title -->
 
           <!-- <h1 class="title is-1 publication-title"><span style="color: #ff6347;">No</span> <span style="color: #1e90ff;">Pose</span>, <span style="color: #ff6347;">No</span> <span style="color: #1e90ff;">Problem</span> <img src="static/images/icon.svg" width="50" style="position: relative; top: 4px;"> </h1> -->
-          <div class="publication-title" style="font-family: 'Google Sans', sans-serif; font-size: 45px; font-weight: 600; line-height: 1; margin-bottom: 0.75rem; display: flex; align-items: center; justify-content: center; gap: 12px; color: #269CD5;">
-            <img src="./static/images/icon.png" alt="Logo" style="height: 100px; width: auto;">
+          <div class="publication-title" style="font-family: 'Google Sans', sans-serif; font-size: 45px; font-weight: 600; line-height: 1; margin-bottom: 0.75rem; display: flex; align-items: center; justify-content: center; gap: 4px; color: #269CD5;">
+            <img src="./static/images/icon.png" alt="Logo" style="height: 150px; width: auto;">
             <span>From None to All</span>
           </div>
           <h2 class="title is-3 publication-title">Self-Supervised 3D Reconstruction via Novel View Synthesis</h2>
@@ -120,25 +122,6 @@
   </div>
 </section>
 
-<!-- <section class="hero teaser">
-  <div class="container is-max-desktop">
-    <div class="hero-body">
-      <div class="content has-text-justified">
-        Can a pose-free generalizable reconstruction model surpass pose-required methods in NVS? Our answer is yes! <br>
-        Can a model trained without GT depth or matching loss surpass SOTA methods in pose estimation? Our answer is yes!
-      </div>
-    </div>
-  </div>
-</section> -->
-
-<!-- <section class="hero is-light is-small has-text-centered">
-  <div class="hero-body">
-    <div class="container">
-      <img src="./static/images/teaser.jpg">
-
-    </div>
-  </div>
-</section> -->
 
 <section class="section">
   <div class="container is-max-desktop">
@@ -207,110 +190,144 @@
 </section>
 
 
-
-
-<!-- <section class="section">
+<section class="section">
   <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-full-width">
-        <h2 class="title is-3">Reconstructed 3D Gaussians and Predicted Cameras</h2>
-        <div class="content has-text-justified">
-          <img src="./static/images/group1.png">
-          <div class="columns is-1 is-multiline is-mobile">
-            <div class="column pb-0 mb-0 is-one-third">
-              <div style="text-align: center;">
-                <a target="_blank"
-                href="./viewer/index.html?is_object=false&url=https://huggingface.co/datasets/lzq49/VicaSplat/resolve/main/gaussians/586004f337ead821.ply">
-                3DGS Viewer</a>
-              </div>
-            </div>
+    <h2 class="title is-3 has-text-centered">NVS Visualizations</h2>
 
-            <div class="column pb-0 mb-0 is-one-third">
-              <div style="text-align: center;">
-                <a target="_blank"
-                href="./viewer/index.html?is_object=false&url=https://huggingface.co/datasets/lzq49/VicaSplat/resolve/main/gaussians/9d496b6788c0f149.ply">
-                3DGS Viewer</a>
-              </div>
-            </div>
+    <div style="display: flex; align-items: center; justify-content: center; gap: 0.75rem;">
+      <button onclick="vidCarousel(-1)"
+        style="background: none; border: none; cursor: pointer; font-size: 2.5rem; color: #555; flex-shrink: 0; user-select: none;">&#8249;</button>
 
-            <div class="column pb-0 mb-0 is-one-third">
-              <div style="text-align: center;">
-                <a target="_blank"
-                href="./viewer/index.html?is_object=false&url=https://huggingface.co/datasets/lzq49/VicaSplat/resolve/main/gaussians/8debcd56accec5c3.ply">
-                3DGS Viewer</a>
-              </div>
-            </div>
-          </div>
-      
+      <div id="vid-viewport">
+        <div class="vid-slide" style="display: flex; flex-direction: row; gap: 0.5rem;">
+          <video autoplay muted loop playsinline controls style="width: 160px; height: auto; border-radius: 8px;">
+            <source src="./static/videos/render.mp4" type="video/mp4">
+          </video>
+          <video autoplay muted loop playsinline controls style="width: 160px; height: auto; border-radius: 8px;">
+            <source src="./static/videos/render2.mp4" type="video/mp4">
+          </video>
+          <video autoplay muted loop playsinline controls style="width: 160px; height: auto; border-radius: 8px;">
+            <source src="./static/videos/render3.mp4" type="video/mp4">
+          </video>
+          <video autoplay muted loop playsinline controls style="width: 160px; height: auto; border-radius: 8px;">
+            <source src="./static/videos/render4.mp4" type="video/mp4">
+          </video>
+          <video autoplay muted loop playsinline controls style="width: 160px; height: auto; border-radius: 8px;">
+            <source src="./static/videos/0c8b534612a0a776.mp4" type="video/mp4">
+          </video>
         </div>
 
-        <div class="content has-text-justified">
-          <img src="./static/images/group2.png">
-          <div class="columns is-1 is-multiline is-mobile">
-            <div class="column pb-0 mb-0 is-one-third">
-              <div style="text-align: center;">
-                <a target="_blank"
-                href="./viewer/index.html?is_object=false&url=https://huggingface.co/datasets/lzq49/VicaSplat/resolve/main/gaussians/9e561f2486d0afb6.ply">
-                3DGS Viewer</a>
-              </div>
-            </div>
-
-            <div class="column pb-0 mb-0 is-one-third">
-              <div style="text-align: center;">
-                <a target="_blank"
-                href="./viewer/index.html?is_object=false&url=https://huggingface.co/datasets/lzq49/VicaSplat/resolve/main/gaussians/d951d621a1ae48a0.ply">
-                3DGS Viewer</a>
-              </div>
-            </div>
-
-            <div class="column pb-0 mb-0 is-one-third">
-              <div style="text-align: center;">
-                <a target="_blank"
-                href="./viewer/index.html?is_object=false&url=https://huggingface.co/datasets/lzq49/VicaSplat/resolve/main/gaussians/df2eb6835b59491f.ply">
-                3DGS Viewer</a>
-              </div>
-            </div>
-          </div>
-      
-        </div>
-  
+        <div class="vid-slide" style="display: none; flex-direction: row; gap: 0.5rem;">
+          <video autoplay muted loop playsinline controls style="width: 160px; height: auto; border-radius: 8px;">
+            <source src="./static/videos/2c52d9d606a3ece2.mp4" type="video/mp4">
+          </video>
+          <video autoplay muted loop playsinline controls style="width: 160px; height: auto; border-radius: 8px;">
+            <source src="./static/videos/2cc5f95fbe24ffe5.mp4" type="video/mp4">
+          </video>
+          <video autoplay muted loop playsinline controls style="width: 160px; height: auto; border-radius: 8px;">
+            <source src="./static/videos/77dc4b468015014b.mp4" type="video/mp4">
+          </video>
+          <video autoplay muted loop playsinline controls style="width: 160px; height: auto; border-radius: 8px;">
+            <source src="./static/videos/91e469c1698f1da4.mp4" type="video/mp4">
+          </video>
+          <video autoplay muted loop playsinline controls style="width: 160px; height: auto; border-radius: 8px;">
+            <source src="./static/videos/dba709d22835a551.mp4" type="video/mp4">
+          </video>
         </div>
       </div>
+
+      <button onclick="vidCarousel(1)"
+        style="background: none; border: none; cursor: pointer; font-size: 2.5rem; color: #555; flex-shrink: 0; user-select: none;">&#8250;</button>
     </div>
+
+    <!-- Dot indicators -->
+    <div style="text-align: center; margin-top: 0.75rem;">
+      <span class="vid-dot" style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #269CD5; margin: 0 4px; cursor: pointer;" onclick="vidGoTo(0)"></span>
+      <span class="vid-dot" style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #ccc; margin: 0 4px; cursor: pointer;" onclick="vidGoTo(1)"></span>
+    </div>
+
   </div>
 </section>
 
+<script>
+  var vidIndex = 0;
+  function vidGoTo(n) {
+    var slides = document.querySelectorAll('.vid-slide');
+    var dots = document.querySelectorAll('.vid-dot');
+    slides[vidIndex].style.display = 'none';
+    vidIndex = (n + slides.length) % slides.length;
+    slides[vidIndex].style.display = 'flex';
+    dots.forEach(function(d, i) { d.style.background = i === vidIndex ? '#269CD5' : '#ccc'; });
+  }
+  function vidCarousel(dir) { vidGoTo(vidIndex + dir); }
+</script>
 
 
-<section class="hero teaser">
+
+
+<section class="section">
   <div class="container is-max-desktop">
-    <h2 class="title is-3">
-      <center>More Novel View Synthesis Results </center>
-    </h2>
-    <div class="hero-body">
-        <div class="column pb-0 mb-0 has-text-centered">
-          <video id="teaser" autoplay muted loop playsinline controls  height="100%">
-            <source
-              src="./static/videos/video1.mp4"
-              type="video/mp4">
-          </video>
+    <h2 class="title is-3 has-text-centered">3D Reconstruction with Predicted Cameras</h2>
+
+    <!-- Carousel wrapper -->
+    <div style="position: relative; display: flex; align-items: center;">
+
+      <!-- Left arrow -->
+      <button id="glb-prev" onclick="glbCarousel(-1)"
+        style="flex-shrink: 0; background: none; border: none; cursor: pointer; font-size: 2.5rem; color: #555; padding: 0 0.5rem; user-select: none;">&#8249;</button>
+
+      <!-- Slides: each slide is a pair of two model-viewers -->
+      <div style="flex: 1; overflow: hidden;">
+
+        <div class="glb-slide" style="display: flex; gap: 1rem;">
+          <div style="flex: 1; text-align: center;">
+            <!-- <h3 class="title is-5">2 Views</h3> -->
+            <model-viewer src="./static/3D/5a27c00f525f5484b7aa0d0107051253bf7bb395bde0b3a4486ff8c52fb4965e_new.glb"
+              alt="Example 1 five views" camera-controls camera-orbit="180deg 75deg 105%"
+              style="width: 100%; height: 420px; background-color: #f5f5f5; border-radius: 8px;">
+            </model-viewer>
+          </div>
+          <div style="flex: 1; text-align: center;">
+            <!-- <h3 class="title is-5">5 Views</h3> -->
+            <model-viewer src="./static/3D/f91fbdea76207935_5view.glb"
+              alt="Example 1 full views" camera-controls camera-orbit="180deg 75deg 105%"
+              style="width: 100%; height: 420px; background-color: #f5f5f5; border-radius: 8px;">
+            </model-viewer>
+          </div>
+          
         </div>
+
         
-        <div class="column pb-0 mb-0 has-text-centered">
-          <video id="teaser" autoplay muted loop playsinline controls  height="100%">
-            <source
-              src="./static/videos/video2.mp4"
-              type="video/mp4">
-          </video>
-        </div>
+      </div>
 
-      
+      <!-- Right arrow -->
+      <button id="glb-next" onclick="glbCarousel(1)"
+        style="flex-shrink: 0; background: none; border: none; cursor: pointer; font-size: 2.5rem; color: #555; padding: 0 0.5rem; user-select: none;">&#8250;</button>
 
+    </div>
 
+    <!-- Dot indicators -->
+    <div style="text-align: center; margin-top: 0.75rem;">
+      <span class="glb-dot" style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #269CD5; margin: 0 4px; cursor: pointer;" onclick="glbGoTo(0)"></span>
+      <span class="glb-dot" style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #ccc; margin: 0 4px; cursor: pointer;" onclick="glbGoTo(1)"></span>
     </div>
 
   </div>
 </section>
+
+<script>
+  var glbIndex = 0;
+  function glbGoTo(n) {
+    var slides = document.querySelectorAll('.glb-slide');
+    var dots = document.querySelectorAll('.glb-dot');
+    slides[glbIndex].style.display = 'none';
+    glbIndex = (n + slides.length) % slides.length;
+    slides[glbIndex].style.display = 'flex';
+    dots.forEach(function(d, i) { d.style.background = i === glbIndex ? '#269CD5' : '#ccc'; });
+  }
+  function glbCarousel(dir) { glbGoTo(glbIndex + dir); }
+</script>
+
 
 
 
@@ -325,7 +342,7 @@
     }
   </code></pre>
   </div>
-</section> -->
+</section> 
 
 
 <footer class="footer">
@@ -406,9 +423,9 @@
   }, 150000); // Change image every 5 seconds
 </script>
 
-<section class="section" style="text-align: center; padding: 3rem 0;">
+<!-- <section class="section" style="text-align: center; padding: 3rem 0;">
   <p style="font-size: 1.5rem; font-weight: 600; color: #888; font-family: 'Google Sans', sans-serif;">🚧 Under Reconstruction 🚧</p>
-</section>
+</section> -->
 
 </body>
 </html>
