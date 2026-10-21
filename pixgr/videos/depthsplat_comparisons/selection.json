@@ -1,0 +1,137 @@
+[
+  {
+    "setting": "intra",
+    "setting_label": "Interpolation (RE10K 2-view intra)",
+    "rank": 105,
+    "scene_hash": "55fb48a338c9ae09",
+    "context": "4_54",
+    "ours": "videos/depthsplat_comparisons/intra/rank_105_55fb48a338c9ae09_pixgr.mp4",
+    "baseline": "videos/depthsplat_comparisons/intra/rank_105_55fb48a338c9ae09_depthsplat.mp4"
+  },
+  {
+    "setting": "intra",
+    "setting_label": "Interpolation (RE10K 2-view intra)",
+    "rank": 295,
+    "scene_hash": "bf335dfd4f3e4fc8",
+    "context": "12_63",
+    "ours": "videos/depthsplat_comparisons/intra/rank_295_bf335dfd4f3e4fc8_pixgr.mp4",
+    "baseline": "videos/depthsplat_comparisons/intra/rank_295_bf335dfd4f3e4fc8_depthsplat.mp4"
+  },
+  {
+    "setting": "intra",
+    "setting_label": "Interpolation (RE10K 2-view intra)",
+    "rank": 151,
+    "scene_hash": "6e77ac6af5163f5b",
+    "context": "96_169",
+    "ours": "videos/depthsplat_comparisons/intra/rank_151_6e77ac6af5163f5b_pixgr.mp4",
+    "baseline": "videos/depthsplat_comparisons/intra/rank_151_6e77ac6af5163f5b_depthsplat.mp4"
+  },
+  {
+    "setting": "intra",
+    "setting_label": "Interpolation (RE10K 2-view intra)",
+    "rank": 13,
+    "scene_hash": "196ffec2c68cafd5",
+    "context": "190_271",
+    "ours": "videos/depthsplat_comparisons/intra/rank_013_196ffec2c68cafd5_pixgr.mp4",
+    "baseline": "videos/depthsplat_comparisons/intra/rank_013_196ffec2c68cafd5_depthsplat.mp4"
+  },
+  {
+    "setting": "intra",
+    "setting_label": "Interpolation (RE10K 2-view intra)",
+    "rank": 45,
+    "scene_hash": "c0e4d7173cde8e04",
+    "context": "26_72",
+    "ours": "videos/depthsplat_comparisons/intra/rank_045_c0e4d7173cde8e04_pixgr.mp4",
+    "baseline": "videos/depthsplat_comparisons/intra/rank_045_c0e4d7173cde8e04_depthsplat.mp4"
+  },
+  {
+    "setting": "intra",
+    "setting_label": "Interpolation (RE10K 2-view intra)",
+    "rank": 100,
+    "scene_hash": "82439bbdcde76fb4",
+    "context": "182_267",
+    "ours": "videos/depthsplat_comparisons/intra/rank_100_82439bbdcde76fb4_pixgr.mp4",
+    "baseline": "videos/depthsplat_comparisons/intra/rank_100_82439bbdcde76fb4_depthsplat.mp4"
+  },
+  {
+    "setting": "extra",
+    "setting_label": "Extrapolation (RE10K 2-view extra)",
+    "rank": 4,
+    "scene_hash": "ee512b8fed64e346",
+    "context": "48_106",
+    "ours": "videos/depthsplat_comparisons/extra/rank_004_ee512b8fed64e346_pixgr.mp4",
+    "baseline": "videos/depthsplat_comparisons/extra/rank_004_ee512b8fed64e346_depthsplat.mp4"
+  },
+  {
+    "setting": "extra",
+    "setting_label": "Extrapolation (RE10K 2-view extra)",
+    "rank": 88,
+    "scene_hash": "6f9cb54175e7d9c2",
+    "context": "27_75",
+    "ours": "videos/depthsplat_comparisons/extra/rank_088_6f9cb54175e7d9c2_pixgr.mp4",
+    "baseline": "videos/depthsplat_comparisons/extra/rank_088_6f9cb54175e7d9c2_depthsplat.mp4"
+  },
+  {
+    "setting": "extra",
+    "setting_label": "Extrapolation (RE10K 2-view extra)",
+    "rank": 697,
+    "scene_hash": "b7f886ec9190aa7d",
+    "context": "9_97",
+    "ours": "videos/depthsplat_comparisons/extra/rank_697_b7f886ec9190aa7d_pixgr.mp4",
+    "baseline": "videos/depthsplat_comparisons/extra/rank_697_b7f886ec9190aa7d_depthsplat.mp4"
+  },
+  {
+    "setting": "extra",
+    "setting_label": "Extrapolation (RE10K 2-view extra)",
+    "rank": 13,
+    "scene_hash": "f26a85e1867eea80",
+    "context": "36_81",
+    "ours": "videos/depthsplat_comparisons/extra/rank_013_f26a85e1867eea80_pixgr.mp4",
+    "baseline": "videos/depthsplat_comparisons/extra/rank_013_f26a85e1867eea80_depthsplat.mp4"
+  },
+  {
+    "setting": "extra",
+    "setting_label": "Extrapolation (RE10K 2-view extra)",
+    "rank": 14,
+    "scene_hash": "59bfa3dceffc42b6",
+    "context": "51_121",
+    "ours": "videos/depthsplat_comparisons/extra/rank_014_59bfa3dceffc42b6_pixgr.mp4",
+    "baseline": "videos/depthsplat_comparisons/extra/rank_014_59bfa3dceffc42b6_depthsplat.mp4"
+  },
+  {
+    "setting": "extra",
+    "setting_label": "Extrapolation (RE10K 2-view extra)",
+    "rank": 18,
+    "scene_hash": "a47b88040452d7d9",
+    "context": "178_229",
+    "ours": "videos/depthsplat_comparisons/extra/rank_018_a47b88040452d7d9_pixgr.mp4",
+    "baseline": "videos/depthsplat_comparisons/extra/rank_018_a47b88040452d7d9_depthsplat.mp4"
+  },
+  {
+    "setting": "extra",
+    "setting_label": "Extrapolation (RE10K 2-view extra)",
+    "rank": 22,
+    "scene_hash": "4f3832284b2bbfc9",
+    "context": "32_84",
+    "ours": "videos/depthsplat_comparisons/extra/rank_022_4f3832284b2bbfc9_pixgr.mp4",
+    "baseline": "videos/depthsplat_comparisons/extra/rank_022_4f3832284b2bbfc9_depthsplat.mp4"
+  },
+  {
+    "setting": "extra",
+    "setting_label": "Extrapolation (RE10K 2-view extra)",
+    "rank": 80,
+    "scene_hash": "01e18dbbf22ff263",
+    "context": "29_101",
+    "ours": "videos/depthsplat_comparisons/extra/rank_080_01e18dbbf22ff263_pixgr.mp4",
+    "baseline": "videos/depthsplat_comparisons/extra/rank_080_01e18dbbf22ff263_depthsplat.mp4"
+  },
+  {
+    "setting": "extra",
+    "setting_label": "Extrapolation (RE10K 2-view extra)",
+    "rank": 98,
+    "scene_hash": "8a8289629784b1ba",
+    "context": "46_92",
+    "ours": "videos/depthsplat_comparisons/extra/rank_098_8a8289629784b1ba_pixgr.mp4",
+    "baseline": "videos/depthsplat_comparisons/extra/rank_098_8a8289629784b1ba_depthsplat.mp4"
+  }
+]

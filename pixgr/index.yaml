@@ -1,0 +1,50 @@
+title: "PixGR: Pixel-Space Generative Decoding for Fast Feed-Forward 3D Reconstruction"
+slug: pixgr
+description: "Pixel-space generative decoding for fast feed-forward 3D reconstruction."
+
+authors:
+  - name: Ranran Huang
+    affiliation: imperial
+  - name: Weijing Bian
+    affiliation: tubingen
+  - name: Weixun Luo
+    affiliation: imperial
+  - name: Ye Mao
+    affiliation: imperial
+  - name: Krystian Mikolajczyk
+    affiliation: imperial
+
+affiliations:
+  imperial: "Imperial College London"
+  tubingen: "University of Tübingen"
+
+links:
+  paper: null
+  code: null
+
+comparisons:
+  manifest: "videos/comparisons/selection.json"
+  selection_policy: "PSNR-improvement ranking among scenes where ours wins PSNR, SSIM, and LPIPS"
+  selected_ranks:
+    intra: [1, 2, 3]
+    extra: [2, 26, 36]
+
+generation_results:
+  - scene: "5ab6c32ba3acddf7"
+    video: "generation/5ab6c32ba3acddf7/video.mp4"
+    context_frames:
+      - frame: 71
+        image: "generation/5ab6c32ba3acddf7/context_1.png"
+      - frame: 203
+        image: "generation/5ab6c32ba3acddf7/context_2.png"
+    camera_trajectory: "generation/5ab6c32ba3acddf7/camera_trajectory.png"
+  - scene: "f536430fb223d623"
+    video: "generation/f536430fb223d623/video.mp4"
+    context_frames:
+      - frame: 31
+        image: "generation/f536430fb223d623/context_1.png"
+      - frame: 99
+        image: "generation/f536430fb223d623/context_2.png"
+    camera_trajectory: "generation/f536430fb223d623/camera_trajectory.png"
+
+template_reference: "https://github.com/pmjames16/airsplat-site/blob/5636aabb56a17520d33b29818bd2c36f070409ff/index.html"

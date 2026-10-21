@@ -1,0 +1,3015 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="PixGR: Pixel-Space Generative Decoding for Fast Feed-Forward 3D Reconstruction">
+  <meta name="keywords" content="PixGR, 3D reconstruction, generative decoding, feed-forward, novel view synthesis">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f172a">
+
+  <title>PixGR: Pixel-Space Generative Decoding for Fast Feed-Forward 3D Reconstruction</title>
+  <link rel="icon" type="image/png" href="./assets/brand/pixgr-logo.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <style>
+    :root {
+      --flow-cyan: #06b6d4;
+      --flow-violet: #7c3aed;
+      --flow-ink: #0f172a;
+      --flow-text: #334155;
+      --flow-muted: #64748b;
+      --flow-line: #dbeafe;
+      --flow-soft: #f5f3ff;
+      --flow-card: rgba(255, 255, 255, 0.9);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--flow-text);
+      background:
+        radial-gradient(circle at 15% 8%, rgba(34, 211, 238, 0.12), transparent 27rem),
+        radial-gradient(circle at 86% 18%, rgba(139, 92, 246, 0.12), transparent 30rem),
+        #ffffff;
+      font-family: "Inter", "Helvetica Neue", Helvetica, "Segoe UI", Arial, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    a {
+      color: var(--flow-violet);
+    }
+
+    .flow-hero {
+      position: relative;
+      overflow: hidden;
+      padding: 3.8rem 1.5rem 3.25rem;
+      background: linear-gradient(180deg, rgba(239, 246, 255, 0.94), rgba(255, 255, 255, 0.78));
+    }
+
+    .flow-hero::before,
+    .flow-hero::after {
+      position: absolute;
+      content: "";
+      width: 20rem;
+      height: 20rem;
+      border: 1px solid rgba(124, 58, 237, 0.12);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .flow-hero::before {
+      top: -11rem;
+      left: -6rem;
+    }
+
+    .flow-hero::after {
+      right: -7rem;
+      bottom: -14rem;
+      border-color: rgba(6, 182, 212, 0.16);
+    }
+
+    .title-wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 1120px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      margin-bottom: 1.35rem;
+      padding: 0.45rem 0.9rem;
+      color: #155e75;
+      background: rgba(207, 250, 254, 0.76);
+      border: 1px solid rgba(6, 182, 212, 0.18);
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .publication-title {
+      max-width: 1050px;
+      margin: 0 auto;
+      color: var(--flow-ink);
+      font-size: clamp(1.9rem, 3.8vw, 3.2rem);
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      line-height: 1.06;
+      text-wrap: balance;
+    }
+
+    .publication-heading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0 auto;
+    }
+
+    .publication-logo {
+      width: clamp(5.75rem, 8vw, 7.5rem);
+      height: auto;
+      flex: 0 0 auto;
+      aspect-ratio: 3 / 2;
+      object-fit: contain;
+      margin-bottom: 0.7rem;
+    }
+
+    .publication-heading .publication-title {
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .publication-title-line {
+      display: block;
+    }
+
+    @media (max-width: 640px) {
+      .publication-logo {
+        width: 4.75rem;
+        height: auto;
+      }
+    }
+
+    .pixgr-word {
+      color: transparent;
+      background: linear-gradient(105deg, var(--flow-cyan), var(--flow-violet));
+      background-clip: text;
+      -webkit-background-clip: text;
+    }
+
+    .authors {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.45rem 1.2rem;
+      margin-top: 2rem;
+      color: var(--flow-ink);
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      font-weight: 500;
+    }
+
+    .authors span {
+      white-space: nowrap;
+    }
+
+    .authors a {
+      color: inherit;
+      text-decoration: none;
+      transition: color 160ms ease;
+    }
+
+    .authors a:hover,
+    .authors a:focus-visible {
+      color: var(--flow-violet);
+      text-decoration: underline;
+      text-underline-offset: 0.18em;
+    }
+
+    .authors sup,
+    .affiliations sup {
+      color: var(--flow-violet);
+      font-weight: 700;
+    }
+
+    .affiliations {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.4rem 1.4rem;
+      margin-top: 0.9rem;
+      color: var(--flow-muted);
+      font-size: 0.98rem;
+    }
+
+    .publication-links {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-top: 1.35rem;
+    }
+
+    .publication-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.58rem 1rem;
+      color: var(--flow-ink);
+      background: white;
+      border: 1px solid #cbd5e1;
+      border-radius: 0.58rem;
+      font-size: 0.86rem;
+      font-weight: 600;
+      line-height: 1;
+      transition: color 160ms ease, border-color 160ms ease, transform 160ms ease;
+    }
+
+    .publication-button:hover,
+    .publication-button:focus-visible {
+      color: var(--flow-violet);
+      border-color: var(--flow-violet);
+      outline: none;
+      transform: translateY(-1px);
+    }
+
+    .publication-button.primary {
+      color: white;
+      background: var(--flow-ink);
+      border-color: var(--flow-ink);
+    }
+
+    .publication-button.primary:hover,
+    .publication-button.primary:focus-visible {
+      color: white;
+      background: var(--flow-violet);
+      border-color: var(--flow-violet);
+    }
+
+    .publication-button[aria-disabled="true"] {
+      cursor: default;
+    }
+
+    .hero-summary {
+      max-width: 780px;
+      margin: 1.8rem auto 0;
+      color: #475569;
+      font-size: 1.08rem;
+      line-height: 1.7;
+      text-wrap: balance;
+    }
+
+    .main-section {
+      padding: 4rem 1.5rem 5rem;
+    }
+
+    .section-heading {
+      margin-bottom: 0.7rem;
+      color: var(--flow-ink);
+      font-size: clamp(1.9rem, 4vw, 2.65rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      text-align: center;
+    }
+
+    #comparison-heading,
+    #quantitative-heading,
+    #efficiency-heading {
+      font-size: clamp(1.4rem, 2.2vw, 1.55rem);
+      line-height: 1.25;
+    }
+
+    .section-copy {
+      max-width: 760px;
+      margin: 0 auto 2.2rem;
+      color: var(--flow-muted);
+      font-size: 1.02rem;
+      line-height: 1.7;
+      text-align: center;
+    }
+
+    .trajectory-context-text {
+      color: #d62728;
+      font-weight: 700;
+    }
+
+    .trajectory-target-text {
+      color: #1f77b4;
+      font-weight: 700;
+    }
+
+    .comparison-shell {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 1rem;
+      background: var(--flow-card);
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      border-radius: 1.4rem;
+      box-shadow: 0 25px 70px rgba(15, 23, 42, 0.14);
+      backdrop-filter: blur(18px);
+    }
+
+    .comparison-gallery {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.8rem;
+    }
+
+    .comparison-card {
+      min-width: 0;
+      padding: 0.42rem;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 1rem;
+    }
+
+    .comparison-gallery.is-single .comparison-card {
+      grid-column: 2;
+    }
+
+    .comparison-stack {
+      display: grid;
+      max-width: 980px;
+      margin: 0 auto;
+      gap: 1.5rem;
+    }
+
+    .comparison-stack .comparison-shell {
+      width: 100%;
+      margin: 0;
+    }
+
+    .comparison-setting-groups {
+      display: grid;
+      gap: 2.75rem;
+    }
+
+    .comparison-setting-title {
+      margin: 0;
+      color: var(--flow-ink);
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      text-align: center;
+    }
+
+    .comparison-setting-copy {
+      margin: 0.3rem auto 0.9rem;
+      color: var(--flow-muted);
+      font-size: 1.02rem;
+      line-height: 1.7;
+      text-align: center;
+    }
+
+    .comparison-block-title {
+      margin: 0.65rem 0 0;
+      color: var(--flow-ink);
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      text-align: center;
+    }
+
+    .method-comparison-panel {
+      max-width: 980px;
+      margin: 1.5rem auto 0;
+      padding: 1.1rem;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid #e2e8f0;
+      border-radius: 1rem;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+    }
+
+    .method-comparison-scroll {
+      overflow-x: auto;
+      padding-bottom: 0.2rem;
+      scrollbar-width: thin;
+    }
+
+    .method-comparison-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(120px, 1fr));
+      min-width: 700px;
+      gap: 0.45rem;
+      align-items: center;
+    }
+
+    .method-comparison-label {
+      align-self: end;
+      color: var(--flow-ink);
+      font-size: 0.76rem;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .method-comparison-cell {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      background: #e2e8f0;
+      border-radius: 0.65rem;
+    }
+
+    .method-comparison-cell > img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .method-detail-callout {
+      position: absolute;
+      top: 15%;
+      left: 8%;
+      z-index: 2;
+      width: 18%;
+      height: 64%;
+      border: 2px solid #f97316;
+      border-radius: 0.22rem;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.72), 0 2px 8px rgba(15, 23, 42, 0.2);
+      pointer-events: none;
+    }
+
+    .method-alignment-callout {
+      position: absolute;
+      top: 76%;
+      left: 1.5%;
+      z-index: 2;
+      width: 27%;
+      height: 22%;
+      border: 2px solid #16a34a;
+      border-radius: 0.22rem;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.72), 0 2px 8px rgba(15, 23, 42, 0.2);
+      pointer-events: none;
+    }
+
+    .method-context-grid {
+      display: grid;
+      width: 100%;
+      height: 100%;
+      margin: auto;
+      gap: 2px;
+      background: white;
+    }
+
+    .method-context-grid.two-contexts {
+      grid-template-rows: repeat(2, 1fr);
+    }
+
+    .method-context-grid.four-contexts {
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+    }
+
+    .method-context-grid img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      min-height: 0;
+      object-fit: cover;
+    }
+
+    .method-comparison-caption {
+      margin: 0.65rem 0 0;
+      color: var(--flow-ink);
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .dataset-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.55rem;
+      margin-bottom: 0.8rem;
+      padding: 0.3rem;
+      background: #eef2ff;
+      border-radius: 0.85rem;
+    }
+
+    .dataset-tab {
+      padding: 0.7rem 0.9rem;
+      color: var(--flow-muted);
+      background: transparent;
+      border: 0;
+      border-radius: 0.65rem;
+      cursor: pointer;
+      font: inherit;
+      font-size: 0.88rem;
+      font-weight: 700;
+      transition: color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+    }
+
+    .dataset-tab:hover,
+    .dataset-tab:focus-visible {
+      color: var(--flow-violet);
+      outline: none;
+    }
+
+    .dataset-tab.active {
+      color: var(--flow-ink);
+      background: white;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.1);
+    }
+
+    .comparison-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      background: #020617;
+      border-radius: 0.95rem;
+      isolation: isolate;
+    }
+
+    .comparison-item {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .comparison-after {
+      z-index: 1;
+    }
+
+    .comparison-before {
+      z-index: 2;
+      width: 50%;
+      border-right: 2px solid rgba(255, 255, 255, 0.96);
+    }
+
+    .comparison-item video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      object-fit: contain;
+      background: #020617;
+      pointer-events: none;
+    }
+
+    .comparison-before video {
+      width: var(--comparison-width, 560px);
+    }
+
+    .comparison-label {
+      position: absolute;
+      z-index: 4;
+      bottom: 10px;
+      padding: 6px 10px;
+      color: rgba(255, 255, 255, 0.95);
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 999px;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 1;
+      pointer-events: none;
+    }
+
+    .label-before {
+      left: 10px;
+    }
+
+    .label-after {
+      right: 10px;
+    }
+
+    .slider-handle {
+      position: absolute;
+      z-index: 3;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 2px;
+      background: white;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    .slider-knob {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      display: grid;
+      width: 2.8rem;
+      height: 2.8rem;
+      color: var(--flow-violet);
+      background: white;
+      border-radius: 50%;
+      box-shadow: 0 8px 28px rgba(15, 23, 42, 0.3);
+      place-items: center;
+      transform: translate(-50%, -50%);
+    }
+
+    .comparison-range {
+      position: absolute;
+      z-index: 5;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      opacity: 0;
+      cursor: ew-resize;
+    }
+
+    .comparison-range:focus-visible + .slider-handle .slider-knob {
+      outline: 3px solid #f8fafc;
+      outline-offset: 3px;
+    }
+
+    .comparison-controls {
+      display: grid;
+      grid-template-columns: 2.15rem auto 2.15rem;
+      align-items: center;
+      gap: 0.55rem;
+      margin: 0;
+    }
+
+    .comparison-controls[hidden] {
+      display: none;
+    }
+
+    .control-button {
+      display: grid;
+      width: 2.15rem;
+      height: 2.15rem;
+      padding: 0;
+      color: white;
+      background: var(--flow-ink);
+      border: 0;
+      border-radius: 50%;
+      cursor: pointer;
+      place-items: center;
+      transition: transform 160ms ease, background 160ms ease;
+    }
+
+    .control-button:hover,
+    .control-button:focus-visible {
+      background: var(--flow-violet);
+      transform: translateY(-1px);
+    }
+
+    .sample-nav {
+      min-width: 0;
+      text-align: center;
+    }
+
+    .sample-dots {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.42rem;
+    }
+
+    .dot {
+      min-width: 1.8rem;
+      padding: 0.25rem 0.42rem;
+      color: #64748b;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 0.76rem;
+      font-weight: 700;
+      line-height: 1;
+      transition: color 180ms ease, background 180ms ease, border-color 180ms ease, transform 180ms ease;
+    }
+
+    .dot:hover,
+    .dot:focus-visible {
+      color: var(--flow-violet);
+      border-color: #a78bfa;
+      outline: none;
+      transform: translateY(-1px);
+    }
+
+    .dot.active {
+      color: white;
+      background: linear-gradient(90deg, var(--flow-cyan), var(--flow-violet));
+      border-color: transparent;
+    }
+
+    .sample-meta {
+      margin-top: 0.55rem;
+      color: #94a3b8;
+      font-size: 0.76rem;
+      line-height: 1.4;
+      text-align: center;
+    }
+
+    .play-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0;
+    }
+
+    .comparison-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 0.7rem;
+      margin-top: 0.55rem;
+    }
+
+    .play-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.42rem 0.72rem;
+      color: var(--flow-ink);
+      background: white;
+      border: 1px solid #dbeafe;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .speed-control {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.3rem 0.45rem 0.3rem 0.65rem;
+      color: var(--flow-ink);
+      background: white;
+      border: 1px solid #dbeafe;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .speed-select {
+      padding: 0.18rem 1.7rem 0.18rem 0.5rem;
+      color: var(--flow-ink);
+      background-color: #eff6ff;
+      border: 0;
+      border-radius: 999px;
+      cursor: pointer;
+      font: inherit;
+    }
+
+    .play-button:focus-visible,
+    .speed-select:focus-visible {
+      outline: 3px solid rgba(124, 58, 237, 0.28);
+      outline-offset: 2px;
+    }
+
+    .interaction-hint {
+      margin-top: 0.55rem;
+      color: #94a3b8;
+      font-size: 0.83rem;
+      text-align: center;
+    }
+
+    .overview-section {
+      padding-bottom: 2rem;
+    }
+
+    .overview-shell {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      border-radius: 1.25rem;
+      box-shadow: 0 20px 60px rgba(15, 23, 42, 0.1);
+    }
+
+    .overview-flow {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) 2.2rem minmax(140px, 0.55fr) 2.2rem minmax(190px, 0.78fr);
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .overview-conditioning,
+    .overview-output {
+      padding: 0.72rem;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.95rem;
+    }
+
+    .overview-stage-title {
+      margin-bottom: 0.55rem;
+      color: var(--flow-ink);
+      font-size: 0.76rem;
+      font-weight: 700;
+      letter-spacing: 0.035em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .overview-input-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.35fr;
+      gap: 0.65rem;
+    }
+
+    .overview-input-group {
+      min-width: 0;
+    }
+
+    .overview-input-label {
+      margin-bottom: 0.35rem;
+      color: var(--flow-muted);
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-align: center;
+    }
+
+    .overview-context-list,
+    .overview-noise-list {
+      display: grid;
+      gap: 0.35rem;
+    }
+
+    .overview-context-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .overview-noise-list {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .overview-view {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      overflow: hidden;
+      background: #e2e8f0;
+      border: 2px solid #67c8dc;
+      border-radius: 0.58rem;
+    }
+
+    .overview-view.target {
+      border-color: #a78bfa;
+    }
+
+    .overview-view img,
+    .overview-view canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .overview-camera-badge {
+      position: absolute;
+      right: 0.28rem;
+      bottom: 0.28rem;
+      display: grid;
+      width: 1.2rem;
+      height: 1.2rem;
+      color: white;
+      background: rgba(15, 23, 42, 0.66);
+      border-radius: 50%;
+      font-size: 0.55rem;
+      place-items: center;
+    }
+
+    .overview-trajectory {
+      display: grid;
+      grid-template-columns: 5rem 1fr;
+      align-items: center;
+      gap: 0.7rem;
+      margin-top: 0.7rem;
+      padding-top: 0.7rem;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .overview-trajectory img {
+      width: 5rem;
+      aspect-ratio: 1 / 1;
+      object-fit: contain;
+      background: white;
+      border-radius: 0.55rem;
+    }
+
+    .overview-trajectory-copy {
+      color: var(--flow-muted);
+      font-size: 0.72rem;
+      line-height: 1.45;
+    }
+
+    .overview-trajectory-copy strong {
+      display: block;
+      margin-bottom: 0.12rem;
+      color: var(--flow-ink);
+      font-size: 0.76rem;
+    }
+
+    .overview-arrow {
+      color: #94a3b8;
+      font-size: 1.2rem;
+      text-align: center;
+    }
+
+    .overview-model {
+      padding: 1.25rem 0.7rem;
+      color: white;
+      background: linear-gradient(135deg, #0891b2, #6d28d9);
+      border-radius: 1rem;
+      box-shadow: 0 14px 30px rgba(109, 40, 217, 0.2);
+      text-align: center;
+    }
+
+    .overview-model strong {
+      display: block;
+      font-size: 1.08rem;
+      font-weight: 700;
+    }
+
+    .overview-model span {
+      display: block;
+      margin-top: 0.3rem;
+      color: rgba(255, 255, 255, 0.84);
+      font-size: 0.68rem;
+      line-height: 1.35;
+    }
+
+    .overview-output {
+      position: relative;
+    }
+
+    .overview-output video {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      background: #020617;
+      border-radius: 0.68rem;
+    }
+
+    .overview-output-label {
+      position: absolute;
+      right: 1rem;
+      bottom: 1rem;
+      padding: 0.36rem 0.62rem;
+      color: rgba(255, 255, 255, 0.96);
+      background: rgba(0, 0, 0, 0.38);
+      border-radius: 999px;
+      backdrop-filter: blur(6px);
+      font-size: 0.68rem;
+      font-weight: 600;
+    }
+
+    .overview-pipeline {
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .overview-encoding-row {
+      display: grid;
+      grid-template-columns: minmax(220px, 270px) 2rem 155px 2rem 170px;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+    }
+
+    .overview-decoding-row {
+      display: grid;
+      grid-template-columns: minmax(380px, 1.45fr) 2rem minmax(145px, 0.52fr) 2rem minmax(190px, 0.72fr);
+      align-items: center;
+      gap: 0.7rem;
+    }
+
+    .overview-context-card,
+    .overview-decoder-inputs,
+    .overview-latent {
+      padding: 0.72rem;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.95rem;
+    }
+
+    .overview-context-card .overview-context-list {
+      max-width: 12rem;
+      margin: 0 auto;
+    }
+
+    .overview-encoder {
+      padding: 1rem 0.7rem;
+      color: #155e75;
+      background: #ecfeff;
+      border: 1px solid #a5f3fc;
+      border-radius: 0.85rem;
+      text-align: center;
+    }
+
+    .overview-encoder > i {
+      display: block;
+      margin-bottom: 0.4rem;
+      font-size: 1rem;
+    }
+
+    .overview-encoder strong,
+    .overview-latent strong {
+      display: block;
+      color: var(--flow-ink);
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .overview-encoder span,
+    .overview-latent > span {
+      display: block;
+      margin-top: 0.22rem;
+      color: var(--flow-muted);
+      font-size: 0.64rem;
+      line-height: 1.35;
+    }
+
+    .overview-latent {
+      text-align: center;
+    }
+
+    .overview-latent-tokens {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.25rem;
+      max-width: 5rem;
+      margin: 0 auto 0.5rem;
+    }
+
+    .overview-latent-tokens span {
+      display: block;
+      aspect-ratio: 1 / 0.68;
+      background: linear-gradient(135deg, #67e8f9, #8b5cf6);
+      border-radius: 0.24rem;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.32);
+    }
+
+    .overview-conditioning-link {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.18rem;
+      color: #8b5cf6;
+      font-size: 0.7rem;
+      font-weight: 600;
+      line-height: 1;
+    }
+
+    .overview-conditioning-link i {
+      font-size: 0.9rem;
+    }
+
+    .overview-decode-source {
+      display: grid;
+      grid-template-columns: 5.8rem 1.1rem minmax(0, 1fr);
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .overview-latent-chip {
+      display: grid;
+      gap: 0.35rem;
+      padding: 0.8rem 0.4rem;
+      color: #6d28d9;
+      background: #f5f3ff;
+      border: 1px solid #ddd6fe;
+      border-radius: 0.68rem;
+      font-size: 0.67rem;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .overview-latent-chip i {
+      font-size: 1rem;
+    }
+
+    .overview-plus {
+      color: #94a3b8;
+      font-size: 1.15rem;
+      font-weight: 500;
+      text-align: center;
+    }
+
+    .overview-target-queries {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 5.4rem;
+      align-items: end;
+      gap: 0.55rem;
+    }
+
+    .overview-target-cameras img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: contain;
+      background: white;
+      border-radius: 0.55rem;
+    }
+
+    .regressor-comparison-shell {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 0.9rem;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 1.35rem;
+      box-shadow: 0 22px 60px rgba(15, 23, 42, 0.09);
+    }
+
+    .paper-first-figure {
+      max-width: 984px;
+      margin: 1.5rem auto 0;
+      padding: 0.7rem;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 1rem;
+      box-shadow: 0 16px 44px rgba(15, 23, 42, 0.08);
+    }
+
+    .paper-first-figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .pixel-decoding-section {
+      padding-top: 2rem;
+      background: #f7f9ff;
+    }
+
+    .pixel-decoding-heading {
+      position: relative;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding-top: 1.35rem;
+      font-size: clamp(1.4rem, 2.2vw, 1.55rem);
+      line-height: 1.25;
+    }
+
+    .pixel-decoding-heading::before {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: min(1120px, calc(100vw - 3rem));
+      height: 1px;
+      background: rgba(148, 163, 184, 0.45);
+      content: "";
+      transform: translateX(-50%);
+    }
+
+    .pixel-decoding-unified {
+      max-width: 1080px;
+      margin: 1.5rem auto 0;
+      padding: 0;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .pixel-decoding-motivation {
+      max-width: 1120px;
+      margin: 1.15rem auto 0;
+      padding-left: 1.5rem;
+      color: var(--flow-muted);
+      font-size: 1.02rem;
+      line-height: 1.65;
+    }
+
+    .pixel-decoding-motivation li + li {
+      margin-top: 0.55rem;
+    }
+
+    .pixel-decoding-motivation strong {
+      color: var(--flow-ink);
+    }
+
+    .pixel-decoding-subsection {
+      margin-top: 2rem;
+      padding-top: 1.75rem;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .pixel-decoding-subtitle {
+      margin: 0 0 0.55rem;
+      color: var(--flow-ink);
+      font-size: 1.45rem;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      text-align: center;
+    }
+
+    .latent-generation-copy {
+      max-width: 940px;
+      margin-bottom: 1rem;
+    }
+
+    .detail-loss-text {
+      color: #ea580c;
+      font-weight: 600;
+    }
+
+    .geometry-error-text {
+      color: #15803d;
+      font-weight: 600;
+    }
+
+    .pixel-decoding-unified .paper-first-figure {
+      margin-top: 0;
+      padding: 0;
+      border: 0;
+      border-radius: 0.8rem;
+      box-shadow: none;
+    }
+
+    .pixel-decoding-unified .regressor-comparison-shell,
+    .pixel-decoding-unified .method-comparison-panel {
+      margin-top: 1rem;
+      padding: 0;
+      background: transparent;
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+    }
+
+    .pixel-decoding-unified .section-copy {
+      max-width: 940px;
+    }
+
+    .regressor-scene-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      align-items: center;
+      gap: 2.5rem;
+    }
+
+    .regressor-scene-comparison {
+      display: grid;
+      grid-template-columns: 218px minmax(0, 240px);
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+    }
+
+    .regressor-input-layout {
+      display: grid;
+      min-width: 0;
+      grid-template-columns: 68px 142px;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .regressor-input-column {
+      display: grid;
+      min-width: 0;
+      grid-template-rows: 2.5rem auto;
+      gap: 0.35rem;
+    }
+
+    .regressor-input-label {
+      display: flex;
+      min-height: 2.5rem;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--flow-ink);
+      font-size: 0.72rem;
+      font-weight: 700;
+      line-height: 1.2;
+      text-align: center;
+    }
+
+    .regressor-input-label-line {
+      display: block;
+      width: 100%;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .regressor-context-stack {
+      display: grid;
+      grid-template-rows: repeat(2, 68px);
+      gap: 6px;
+    }
+
+    .regressor-media-card {
+      min-width: 0;
+      margin: 0;
+      overflow: hidden;
+      background: #020617;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.9rem;
+    }
+
+    .regressor-media-card img,
+    .regressor-media-card video {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: contain;
+      background: #020617;
+    }
+
+    .regressor-media-card.trajectory img {
+      background: white;
+    }
+
+    .regressor-input-layout .regressor-media-card {
+      position: relative;
+      min-height: 0;
+      aspect-ratio: 1 / 1;
+    }
+
+    .regressor-input-layout .regressor-media-card img {
+      height: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+    }
+
+    .regressor-input-layout .regressor-media-card.trajectory img {
+      object-fit: contain;
+    }
+
+    .regressor-input-layout .regressor-media-card.context-observation {
+      border-color: #d62728;
+    }
+
+    .regressor-drag-comparison {
+      width: 100%;
+      max-width: 240px;
+      justify-self: center;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1);
+    }
+
+    .regressor-interaction-copy {
+      margin: 0.8rem 0 0;
+      color: #64748b;
+      font-size: 0.82rem;
+      text-align: center;
+    }
+
+    .quantitative-section {
+      background: #ffffff;
+    }
+
+    .efficiency-section {
+      background: #ffffff;
+    }
+
+    .quantitative-shell {
+      display: grid;
+      max-width: 1120px;
+      margin: 0 auto;
+      gap: 1.5rem;
+    }
+
+    .quantitative-card {
+      min-width: 0;
+      padding: 1.25rem 1.25rem 1rem;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 1.25rem;
+      box-shadow: 0 18px 48px rgba(15, 23, 42, 0.08);
+    }
+
+    .efficiency-figure {
+      width: 100%;
+      max-width: 660px;
+      margin: 0 auto;
+      padding: 0.75rem;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 1rem;
+      box-shadow: 0 12px 32px rgba(15, 23, 42, 0.07);
+    }
+
+    .efficiency-figure img {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .efficiency-figure figcaption {
+      margin-top: 0.5rem;
+      color: var(--flow-muted);
+      font-size: 0.78rem;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .efficiency-copy {
+      max-width: 900px;
+      margin-bottom: 1.4rem;
+    }
+
+    .quantitative-title {
+      margin: 0;
+      color: var(--flow-ink);
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      text-align: center;
+    }
+
+    .quantitative-copy {
+      margin: 0.3rem auto 1rem;
+      color: var(--flow-muted);
+      font-size: 0.86rem;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .quantitative-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.85rem;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .quantitative-table {
+      width: 100%;
+      min-width: 820px;
+      border-collapse: collapse;
+      color: #334155;
+      background: white;
+      font-size: 0.8rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .quantitative-table th,
+    .quantitative-table td {
+      padding: 0.58rem 0.64rem;
+      border-bottom: 1px solid #e2e8f0;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .quantitative-table th:first-child,
+    .quantitative-table td:first-child {
+      text-align: left;
+    }
+
+    .quantitative-table thead th {
+      color: var(--flow-ink);
+      background: #f8fafc;
+      font-weight: 700;
+    }
+
+    .quantitative-table thead tr:first-child th {
+      border-bottom-color: #cbd5e1;
+    }
+
+    .quantitative-table tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .quantitative-group td {
+      padding-top: 0.48rem;
+      padding-bottom: 0.48rem;
+      color: #475569;
+      background: #f1f5f9;
+      font-size: 0.76rem;
+      font-style: italic;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-align: left;
+    }
+
+    .quantitative-ours td {
+      background: #f5f3ff;
+      font-weight: 600;
+    }
+
+    .quantitative-ours td:first-child {
+      color: #6d28d9;
+      font-weight: 800;
+    }
+
+    .result-best {
+      color: #5b21b6;
+      font-weight: 800;
+    }
+
+    .result-second {
+      font-weight: 700;
+      text-decoration: underline;
+      text-decoration-color: #94a3b8;
+      text-underline-offset: 0.16em;
+    }
+
+    .flow-footer {
+      padding: 2.8rem 1.5rem;
+      color: #64748b;
+      background: linear-gradient(180deg, #f8fafc, #eff6ff);
+      border-top: 1px solid #e2e8f0;
+      font-size: 0.9rem;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .regressor-comparison-shell {
+        max-width: 520px;
+      }
+
+      .regressor-scene-list {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+      }
+
+      .regressor-scene-comparison {
+        grid-template-columns: 218px minmax(0, 240px);
+        gap: 0.65rem;
+      }
+
+      .overview-flow {
+        grid-template-columns: 1fr;
+      }
+
+      .overview-encoding-row,
+      .overview-decoding-row {
+        grid-template-columns: 1fr;
+      }
+
+      .overview-arrow {
+        transform: rotate(90deg);
+      }
+
+      .overview-context-card,
+      .overview-encoder,
+      .overview-latent,
+      .overview-decoder-inputs,
+      .overview-model,
+      .overview-output {
+        width: min(100%, 24rem);
+        margin: 0 auto;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .quantitative-card {
+        padding: 0.85rem 0.75rem 0.75rem;
+        border-radius: 1rem;
+      }
+
+      .regressor-scene-list {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .regressor-scene-comparison {
+        grid-template-columns: 1fr;
+      }
+
+      .regressor-input-layout {
+        justify-self: center;
+      }
+
+      .flow-hero {
+        padding-top: 3.8rem;
+      }
+
+      .authors {
+        display: block;
+      }
+
+      .authors span {
+        display: block;
+        margin: 0.28rem 0;
+      }
+
+      .comparison-shell {
+        padding: 0.65rem;
+        border-radius: 1rem;
+      }
+
+      .comparison-gallery {
+        grid-template-columns: 1fr;
+      }
+
+      .comparison-gallery.is-single .comparison-card {
+        grid-column: 1;
+      }
+
+      .overview-input-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .overview-decode-source {
+        grid-template-columns: 1fr;
+      }
+
+      .overview-plus {
+        padding: 0.1rem 0;
+      }
+
+      .overview-target-queries {
+        grid-template-columns: minmax(0, 1fr) 5rem;
+      }
+
+      .comparison-label {
+        bottom: 0.65rem;
+        font-size: 0.72rem;
+      }
+
+      .label-before {
+        left: 0.65rem;
+      }
+
+      .label-after {
+        right: 0.65rem;
+      }
+
+    }
+
+    .keytarget-section {
+      padding-top: 2rem;
+      background: #f7f9ff;
+    }
+
+    .keytarget-copy {
+      position: relative;
+      max-width: 1120px;
+      padding-top: 1.35rem;
+    }
+
+    .keytarget-copy strong {
+      display: inline-block;
+      margin-bottom: 0.28rem;
+      color: var(--flow-ink);
+      font-size: clamp(1.4rem, 2.2vw, 1.55rem);
+      line-height: 1.25;
+    }
+
+    .keytarget-copy::before {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: min(1120px, calc(100vw - 3rem));
+      height: 1px;
+      background: rgba(148, 163, 184, 0.45);
+      content: "";
+      transform: translateX(-50%);
+    }
+
+    .keytarget-shell {
+      display: grid;
+      grid-template-columns: 250px minmax(0, 1fr);
+      grid-template-areas:
+        "inputs viewer"
+        "inputs controls";
+      align-items: start;
+      max-width: 1120px;
+      margin: 0 auto;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.94);
+      border: 1px solid rgba(148, 163, 184, 0.24);
+      border-radius: 1.1rem;
+      box-shadow: 0 18px 50px rgba(15, 23, 42, 0.11);
+    }
+
+    .keytarget-inputs {
+      grid-area: inputs;
+      align-self: stretch;
+      padding: 0.75rem;
+      background: linear-gradient(160deg, #f8fafc, #eef2ff);
+      border-right: 1px solid #e2e8f0;
+    }
+
+    .keytarget-panel-title {
+      margin: 0 0 0.45rem;
+      color: var(--flow-ink);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.055em;
+      text-transform: uppercase;
+    }
+
+    .keytarget-context-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.35rem;
+    }
+
+    .keytarget-context-block .keytarget-panel-title {
+      display: flex;
+      min-height: 1.65rem;
+      align-items: center;
+    }
+
+    .keytarget-context-card {
+      position: relative;
+      margin: 0;
+      overflow: hidden;
+      background: #cbd5e1;
+      border: 2px solid #ef4444;
+      border-radius: 0.55rem;
+      aspect-ratio: 1 / 1;
+    }
+
+    .keytarget-context-card img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .keytarget-trajectory-block {
+      margin-top: 0.85rem;
+      padding-top: 0.65rem;
+      border-top: 1px solid #dbeafe;
+    }
+
+    .keytarget-trajectory-frame {
+      margin: 0;
+      overflow: hidden;
+      background: white;
+      border: 1px solid #dbeafe;
+      border-radius: 0.65rem;
+    }
+
+    .keytarget-trajectory-frame img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: contain;
+    }
+
+    .keytarget-trajectory-caption {
+      margin: 0.35rem 0 0;
+      color: var(--flow-muted);
+      font-size: 0.66rem;
+      line-height: 1.35;
+      text-align: center;
+    }
+
+    .keytarget-viewer-column {
+      grid-area: viewer;
+      min-width: 0;
+      padding: 0.75rem;
+    }
+
+    .keytarget-display-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 252px;
+      gap: 0.65rem;
+      align-items: start;
+    }
+
+    .keytarget-reconstruction-column,
+    .keytarget-novel-column {
+      min-width: 0;
+    }
+
+    .keytarget-novel-column {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .keytarget-novel-stack {
+      width: 100%;
+      max-width: 252px;
+      margin: 0 0 0 auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .keytarget-viewer-header {
+      display: flex;
+      min-height: 1.65rem;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.45rem;
+    }
+
+    .keytarget-viewer-title {
+      margin: 0;
+      color: var(--flow-ink);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .keytarget-count-badge {
+      min-width: 6.75rem;
+      padding: 0.3rem 0.6rem;
+      color: white;
+      background: linear-gradient(100deg, var(--flow-cyan), var(--flow-violet));
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .keytarget-viewer-frame {
+      position: relative;
+      overflow: hidden;
+      min-height: 300px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.8rem;
+    }
+
+    .keytarget-viewer-frame iframe {
+      display: block;
+      width: 100%;
+      height: 300px;
+      border: 0;
+      background: white;
+    }
+
+    .keytarget-viewer-status {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      color: var(--flow-muted);
+      background: rgba(248, 250, 252, 0.88);
+      font-size: 0.84rem;
+      font-weight: 600;
+      pointer-events: none;
+      place-items: center;
+      transition: opacity 180ms ease;
+    }
+
+    .keytarget-novel-header {
+      display: flex;
+      min-height: 1.65rem;
+      align-items: center;
+      margin-bottom: 0.45rem;
+    }
+
+    .keytarget-novel-header .keytarget-viewer-title {
+      white-space: nowrap;
+    }
+
+    .keytarget-metrics {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.2rem;
+      width: 100%;
+      max-width: 252px;
+      margin: 0.35rem auto 0;
+    }
+
+    .keytarget-total-psnr,
+    .keytarget-total-time {
+      display: block;
+      padding: 0.25rem 0.45rem;
+      color: var(--flow-violet);
+      background: #f5f3ff;
+      border: 1px solid #ddd6fe;
+      border-radius: 999px;
+      font-size: 0.63rem;
+      font-weight: 700;
+      line-height: 1.05;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .keytarget-novel-list {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr);
+      gap: 0.4rem;
+      width: 100%;
+      max-width: 252px;
+      margin: 0 auto;
+    }
+
+    .keytarget-novel-card {
+      display: flex;
+      width: 100%;
+      min-height: 0;
+      margin: 0;
+      overflow: hidden;
+      flex-direction: column;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.8rem;
+      aspect-ratio: 1 / 1;
+    }
+
+    .keytarget-novel-card img,
+    .keytarget-novel-card video {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      flex: 1 1 auto;
+      object-fit: cover;
+      object-position: center;
+      background: #0f172a;
+    }
+
+    .keytarget-viewer-status.is-ready {
+      opacity: 0;
+    }
+
+    .keytarget-controls {
+      grid-area: controls;
+      align-self: end;
+      justify-self: center;
+      width: calc(100% - 1.5rem);
+      margin: 0.25rem 0 0;
+      padding: 0.28rem 0.75rem 0.18rem;
+      transform: translateY(-0.55rem);
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.75rem;
+    }
+
+    .keytarget-range {
+      width: 100%;
+      height: 0.28rem;
+      margin: 0;
+      appearance: none;
+      -webkit-appearance: none;
+      background: linear-gradient(
+        to right,
+        var(--flow-violet) 0,
+        var(--flow-violet) var(--keytarget-progress, 0%),
+        #dbeafe var(--keytarget-progress, 0%),
+        #dbeafe 100%
+      );
+      border-radius: 999px;
+      cursor: pointer;
+    }
+
+    .keytarget-range::-webkit-slider-thumb {
+      width: 0.9rem;
+      height: 0.9rem;
+      appearance: none;
+      -webkit-appearance: none;
+      background: white;
+      border: 3px solid var(--flow-violet);
+      border-radius: 50%;
+      box-shadow: 0 3px 10px rgba(15, 23, 42, 0.2);
+    }
+
+    .keytarget-range::-moz-range-thumb {
+      width: 0.55rem;
+      height: 0.55rem;
+      background: white;
+      border: 3px solid var(--flow-violet);
+      border-radius: 50%;
+      box-shadow: 0 3px 10px rgba(15, 23, 42, 0.2);
+    }
+
+    .keytarget-range:focus-visible {
+      outline: 3px solid rgba(124, 58, 237, 0.24);
+      outline-offset: 5px;
+    }
+
+    .keytarget-ticks {
+      position: relative;
+      height: 0.9rem;
+      margin: 0.15rem 0.45rem 0;
+    }
+
+    .keytarget-tick {
+      position: absolute;
+      top: 0;
+      width: 3rem;
+      padding: 0.04rem;
+      color: var(--flow-muted);
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+      font: inherit;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-align: center;
+      transform: translateX(-50%);
+    }
+
+    .keytarget-tick:nth-child(1) { left: 0%; }
+    .keytarget-tick:nth-child(2) { left: 33.333%; }
+    .keytarget-tick:nth-child(3) { left: 66.667%; }
+    .keytarget-tick:nth-child(4) { left: 100%; }
+
+    .keytarget-tick:hover,
+    .keytarget-tick:focus-visible,
+    .keytarget-tick.active {
+      color: var(--flow-violet);
+      outline: none;
+    }
+
+    .keytarget-hint {
+      margin: 0.5rem 0 0;
+      color: #94a3b8;
+      font-size: 0.7rem;
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    @media (max-width: 860px) {
+      .keytarget-shell {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+          "inputs"
+          "viewer"
+          "controls";
+        align-items: stretch;
+      }
+
+      .keytarget-inputs {
+        border-right: 0;
+        border-bottom: 1px solid #e2e8f0;
+      }
+
+      .keytarget-controls {
+        grid-column: 1;
+        transform: none;
+      }
+
+      .keytarget-novel-stack {
+        margin-right: auto;
+        margin-left: auto;
+      }
+
+      .keytarget-inputs-inner {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(180px, 0.75fr);
+        gap: 0.75rem;
+        align-items: start;
+      }
+
+      .keytarget-trajectory-block {
+        margin-top: 0;
+        padding-top: 0;
+        border-top: 0;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .keytarget-inputs-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .keytarget-viewer-column {
+        padding: 0.65rem;
+      }
+
+      .keytarget-viewer-frame,
+      .keytarget-viewer-frame iframe {
+        height: 320px;
+        min-height: 320px;
+      }
+
+      .keytarget-display-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .keytarget-novel-stack {
+        max-width: 100%;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      * {
+        transition: none !important;
+      }
+    }
+    .method-overview-shell {
+      max-width: 1090px;
+      margin: 0 auto;
+      overflow: hidden;
+      background: #ffffff;
+      border: 1px solid rgba(148, 163, 184, 0.24);
+      border-radius: 1.1rem;
+      box-shadow: 0 20px 60px rgba(15, 23, 42, 0.1);
+    }
+
+    .method-overview-media {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 4000 / 1403;
+      object-fit: contain;
+      background: #ffffff;
+    }
+
+    .method-tldr {
+      max-width: 1120px;
+      margin: 1.35rem auto 0;
+      color: #475569;
+      font-size: 1.05rem;
+      line-height: 1.7;
+      text-align: left;
+    }
+
+    .method-tldr strong {
+      color: var(--flow-violet);
+    }
+
+    @media (max-width: 768px) {
+      .method-overview-shell {
+        border-radius: 0.8rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="flow-hero">
+    <div class="title-wrap">
+      <div class="publication-heading">
+        <img class="publication-logo" src="./assets/brand/pixgr-logo.png" alt="PixGR logo">
+        <h1 class="publication-title">
+          <span class="publication-title-line">
+            <span><span class="pixgr-word">PixGR:</span> Pixel-Space Generative Decoding</span>
+          </span>
+          <span class="publication-title-line">for Fast Feed-Forward 3D Reconstruction</span>
+        </h1>
+      </div>
+
+      <div class="authors" aria-label="Authors">
+        <span><a href="https://ranrhuang.github.io/">Ranran Huang</a><sup>1</sup></span>
+        <span><a href="https://bianwenjing.github.io/">Wenjing Bian</a><sup>2</sup></span>
+        <span><a href="https://github.com/Roldbach/">Weixun Luo</a><sup>1</sup></span>
+        <span><a href="https://yebulabula.github.io/">Ye Mao</a><sup>1</sup></span>
+        <span><a href="https://www.imperial.ac.uk/people/k.mikolajczyk">Krystian Mikolajczyk</a><sup>1</sup></span>
+      </div>
+
+      <div class="affiliations">
+        <span><sup>1</sup> Imperial College London</span>
+        <span><sup>2</sup> University of Tübingen</span>
+      </div>
+
+      <div class="publication-links" aria-label="Publication resources">
+        <a class="publication-button primary" aria-disabled="true" title="Paper link coming soon">
+          <i class="fa-regular fa-file-pdf" aria-hidden="true"></i>
+          <span>Paper</span>
+        </a>
+        <a class="publication-button" href="https://github.com/ranrhuang/PixGR" target="_blank" rel="noopener noreferrer">
+          <i class="fa-brands fa-github" aria-hidden="true"></i>
+          <span>Code</span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <main>
+    <section class="main-section overview-section" aria-label="Method overview">
+      <div class="container is-widescreen">
+        <div class="method-overview-shell">
+          <video
+            id="method-overview-video"
+            class="method-overview-media"
+            autoplay
+            muted
+            playsinline
+            preload="metadata"
+            poster="./assets/method/method-overview-poster.png"
+            aria-label="Animated PixGR method overview showing context encoding, target-view denoising, shared 3D Gaussians, rendering, and reconstruction supervision"
+          >
+            <source src="./assets/method/overview-with-animation.mp4" type="video/mp4">
+          </video>
+        </div>
+        <p class="method-tldr">
+          <strong>TL;DR:</strong> PixGR integrates pixel-space generative decoding into fast feed-forward 3D reconstruction to model uncertainty while maintaining simplicity and efficiency. Context observations are first encoded into a scene latent, which conditions pixel-space generative decoding at noisy target views to produce a shared 3D Gaussian representation.
+        </p>
+      </div>
+    </section>
+
+    <section class="main-section keytarget-section" aria-label="Effect of additional target views">
+      <div class="container is-widescreen">
+        <p class="section-copy keytarget-copy">
+          <strong>Denoising additional target views provide richer multi-view evidence.</strong><br>
+          The generative decoder produces better geometry and appearance in the shared 3D Gaussian representation with more target views.
+        </p>
+
+        <div class="keytarget-shell">
+          <aside class="keytarget-inputs" aria-label="Context observations and camera trajectory">
+            <div class="keytarget-inputs-inner">
+              <div class="keytarget-context-block">
+                <h3 class="keytarget-panel-title">Context views</h3>
+                <div class="keytarget-context-grid">
+                  <figure class="keytarget-context-card">
+                    <img src="./gaussian_keytargets/context_09.png" alt="RE10K context observation at frame 9">
+                  </figure>
+                  <figure class="keytarget-context-card">
+                    <img src="./gaussian_keytargets/context_97.png" alt="RE10K context observation at frame 97">
+                  </figure>
+                </div>
+              </div>
+
+              <div class="keytarget-trajectory-block">
+                <h3 class="keytarget-panel-title">Camera trajectory</h3>
+                <figure class="keytarget-trajectory-frame">
+                  <img id="keytarget-trajectory" src="./gaussian_keytargets/trajectory_k0.png" alt="Camera trajectory for zero generated target views">
+                </figure>
+                <p class="keytarget-trajectory-caption">
+                  <span class="trajectory-context-text">Clean images</span> at context views<br>
+                  <span class="trajectory-target-text">Pure Gaussian noise</span> at target views
+                </p>
+              </div>
+            </div>
+          </aside>
+
+          <div class="keytarget-viewer-column">
+            <div class="keytarget-display-grid">
+              <div class="keytarget-reconstruction-column">
+                <div class="keytarget-viewer-header">
+                  <h3 class="keytarget-viewer-title">Interactive 3D Gaussians</h3>
+                  <span class="keytarget-count-badge" id="keytarget-count" aria-live="polite">k = 0 targets</span>
+                </div>
+
+                <div class="keytarget-viewer-frame">
+                  <iframe
+                    id="keytarget-viewer"
+                    title="Interactive Gaussian reconstruction with zero generated target views"
+                    src="./gaussian_keytargets/viewer/index.html?url=../../gaussian_keytargets/k0.splat&amp;is_object=true"
+                    loading="lazy"
+                    allow="fullscreen">
+                  </iframe>
+                  <div class="keytarget-viewer-status" id="keytarget-viewer-status" aria-live="polite">Loading Gaussian reconstruction…</div>
+                </div>
+              </div>
+
+              <aside class="keytarget-novel-column" aria-label="Novel-view renderings">
+                <div class="keytarget-novel-stack">
+                  <div class="keytarget-novel-header">
+                    <h3 class="keytarget-viewer-title">Novel view</h3>
+                  </div>
+                  <div class="keytarget-novel-list">
+                    <figure class="keytarget-novel-card">
+                      <video id="keytarget-novel-video" autoplay muted loop playsinline preload="metadata" src="./gaussian_keytargets/render_k0.mp4" aria-label="Novel-view camera-path rendering with zero generated target views"></video>
+                    </figure>
+                  </div>
+                  <div class="keytarget-metrics" aria-label="Reconstruction metrics">
+                    <span class="keytarget-total-psnr" id="keytarget-total-psnr">PSNR 24.29 dB</span>
+                    <span class="keytarget-total-time" id="keytarget-total-time">Time 0.11 s</span>
+                  </div>
+                </div>
+              </aside>
+            </div>
+
+          </div>
+
+          <div class="keytarget-controls">
+              <input
+                class="keytarget-range"
+                id="keytarget-range"
+                type="range"
+                min="0"
+                max="3"
+                step="1"
+                value="0"
+                aria-label="Number of generated target views">
+              <div class="keytarget-ticks" aria-label="Select number of generated target views">
+                <button class="keytarget-tick active" type="button" data-keytarget="0">k = 0</button>
+                <button class="keytarget-tick" type="button" data-keytarget="1">k = 1</button>
+                <button class="keytarget-tick" type="button" data-keytarget="2">k = 2</button>
+                <button class="keytarget-tick" type="button" data-keytarget="3">k = 3</button>
+              </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="main-section pixel-decoding-section" aria-labelledby="pixel-decoding-heading">
+      <div class="container is-widescreen">
+        <h2 class="section-heading pixel-decoding-heading" id="pixel-decoding-heading">Why pixel-space generative decoding?</h2>
+        <ol class="pixel-decoding-motivation">
+          <li>
+            <strong>PixGR vs. regression-based decoding.</strong> A regressor deterministically maps context representations to 3D Gaussians. PixGR instead performs generative decoding with noisy images at target poses, improving reconstruction under large viewpoint changes and occlusion.
+          </li>
+          <li>
+            <strong>PixGR vs. previous latent-generation models.</strong> Two-stage pipelines propagate errors, while VAE latents lose fine detail. PixGR jointly learns generation and reconstruction end-to-end in pixel space.
+          </li>
+        </ol>
+        <div class="pixel-decoding-unified">
+          <figure class="paper-first-figure">
+            <img
+              src="./pipeline_comparison_v2_2x.png"
+              alt="Comparison of reconstruction, generation-then-reconstruction, reconstruction-then-generation, and PixGR joint reconstruction and generation pipelines"
+              loading="lazy"
+            >
+          </figure>
+
+          <section class="pixel-decoding-subsection" aria-labelledby="regressor-comparison-heading">
+            <h3 class="pixel-decoding-subtitle" id="regressor-comparison-heading">PixGR vs. Regression-based Decoding</h3>
+            <p class="section-copy">
+              By introducing noisy target views, PixGR improves interpolation when context observations have little overlap and strengthens extrapolation in occluded or unseen regions.
+            </p>
+            <div class="regressor-comparison-shell">
+          <div class="regressor-scene-list" aria-label="Generative and deterministic decoding comparisons">
+            <article class="regressor-scene-comparison">
+              <div class="regressor-input-layout" aria-label="Two context views and camera trajectory">
+                <div class="regressor-input-column">
+                  <div class="regressor-input-label"><span class="trajectory-context-text">Context</span></div>
+                  <div class="regressor-context-stack">
+                    <figure class="regressor-media-card context-observation">
+                      <img src="./regressor_comparison/f4b4148fbb2eaf48/context_1.png" alt="First context observation">
+                    </figure>
+                    <figure class="regressor-media-card context-observation">
+                      <img src="./regressor_comparison/f4b4148fbb2eaf48/context_90.png" alt="Second context observation">
+                    </figure>
+                  </div>
+                </div>
+                <div class="regressor-input-column">
+                  <div class="regressor-input-label">
+                    <span class="regressor-input-label-line">Camera Poses</span>
+                    <span class="regressor-input-label-line"><span class="trajectory-context-text">Context</span> and <span class="trajectory-target-text">Target</span></span>
+                  </div>
+                  <figure class="regressor-media-card trajectory">
+                    <img src="./regressor_comparison/f4b4148fbb2eaf48/camera_trajectory.png" alt="Camera trajectory showing context and target views">
+                  </figure>
+                </div>
+              </div>
+              <div class="comparison-container regressor-drag-comparison">
+                <div class="comparison-item comparison-after">
+                  <video class="pixgr-video" autoplay muted playsinline preload="metadata" aria-label="PixGR rendering for the first scene">
+                    <source src="./regressor_comparison/f4b4148fbb2eaf48/pixgr.mp4" type="video/mp4">
+                  </video>
+                  <span class="comparison-label label-after">PixGR</span>
+                </div>
+                <div class="comparison-item comparison-before">
+                  <video class="baseline-video" autoplay muted playsinline preload="metadata" aria-label="Regressor rendering for the first scene">
+                    <source src="./regressor_comparison/f4b4148fbb2eaf48/regressor.mp4" type="video/mp4">
+                  </video>
+                  <span class="comparison-label label-before">Regressor</span>
+                </div>
+                <input class="comparison-range" type="range" min="0" max="100" value="50" aria-label="Reveal Regressor or PixGR for the first scene">
+                <div class="slider-handle" aria-hidden="true">
+                  <div class="slider-knob"><i class="fa-solid fa-left-right"></i></div>
+                </div>
+              </div>
+            </article>
+
+            <article class="regressor-scene-comparison">
+              <div class="regressor-input-layout" aria-label="Two context views and camera trajectory">
+                <div class="regressor-input-column">
+                  <div class="regressor-input-label"><span class="trajectory-context-text">Context</span></div>
+                  <div class="regressor-context-stack">
+                    <figure class="regressor-media-card context-observation">
+                      <img src="./regressor_comparison/3bae42d603be2266/context_94.png" alt="First context observation">
+                    </figure>
+                    <figure class="regressor-media-card context-observation">
+                      <img src="./regressor_comparison/3bae42d603be2266/context_225.png" alt="Second context observation">
+                    </figure>
+                  </div>
+                </div>
+                <div class="regressor-input-column">
+                  <div class="regressor-input-label">
+                    <span class="regressor-input-label-line">Camera Poses</span>
+                    <span class="regressor-input-label-line"><span class="trajectory-context-text">Context</span> and <span class="trajectory-target-text">Target</span></span>
+                  </div>
+                  <figure class="regressor-media-card trajectory">
+                    <img src="./regressor_comparison/3bae42d603be2266/camera_trajectory_71_232.png" alt="Camera trajectory showing context and target views">
+                  </figure>
+                </div>
+              </div>
+              <div class="comparison-container regressor-drag-comparison">
+                <div class="comparison-item comparison-after">
+                  <video class="pixgr-video" autoplay muted playsinline preload="metadata" aria-label="PixGR rendering for the second scene">
+                    <source src="./regressor_comparison/3bae42d603be2266/pixgr_71_232.mp4" type="video/mp4">
+                  </video>
+                  <span class="comparison-label label-after">PixGR</span>
+                </div>
+                <div class="comparison-item comparison-before">
+                  <video class="baseline-video" autoplay muted playsinline preload="metadata" aria-label="Regressor rendering for the second scene">
+                    <source src="./regressor_comparison/3bae42d603be2266/regressor_71_232.mp4" type="video/mp4">
+                  </video>
+                  <span class="comparison-label label-before">Regressor</span>
+                </div>
+                <input class="comparison-range" type="range" min="0" max="100" value="50" aria-label="Reveal Regressor or PixGR for the second scene">
+                <div class="slider-handle" aria-hidden="true">
+                  <div class="slider-knob"><i class="fa-solid fa-left-right"></i></div>
+                </div>
+              </div>
+            </article>
+          </div>
+          <p class="regressor-interaction-copy">Drag each image to compare Regressor and PixGR</p>
+            </div>
+          </section>
+
+          <section class="pixel-decoding-subsection" aria-labelledby="latent-generation-heading">
+            <h3 class="pixel-decoding-subtitle" id="latent-generation-heading">PixGR vs. Previous Latent Generation Models</h3>
+            <p class="section-copy latent-generation-copy">
+              Latent-generation models can lose <span class="detail-loss-text">fine details</span> and introduce <span class="geometry-error-text">geometry misalignment</span> through latent bottlenecks and stage-wise error propagation. PixGR avoids both with end-to-end pixel-space decoding.
+            </p>
+            <article class="method-comparison-panel" aria-label="PixGR comparison with ReconSplat and MVSplat360 on DL3DV">
+          <div class="method-comparison-scroll">
+            <div class="method-comparison-grid">
+              <div class="method-comparison-label">Context</div>
+              <div class="method-comparison-label">ReconSplat</div>
+              <div class="method-comparison-label">MVSplat360</div>
+              <div class="method-comparison-label">PixGR</div>
+              <div class="method-comparison-label">Ground Truth</div>
+              <div class="method-comparison-cell">
+                <div class="method-context-grid four-contexts">
+                  <img src="./method_comparison_extra/dl3dv_6d81c5ab/context_11.png" alt="First DL3DV context view">
+                  <img src="./method_comparison_extra/dl3dv_6d81c5ab/context_17.png" alt="Second DL3DV context view">
+                  <img src="./method_comparison_extra/dl3dv_6d81c5ab/context_23.png" alt="Third DL3DV context view">
+                  <img src="./method_comparison_extra/dl3dv_6d81c5ab/context_36.png" alt="Fourth DL3DV context view">
+                </div>
+              </div>
+              <div class="method-comparison-cell">
+                <img src="./method_comparison_extra/dl3dv_6d81c5ab/reconsplat.png" alt="ReconSplat extrapolation result for DL3DV">
+                <span class="method-detail-callout" aria-hidden="true"></span>
+                <span class="method-alignment-callout" aria-hidden="true"></span>
+              </div>
+              <div class="method-comparison-cell">
+                <img src="./method_comparison_extra/dl3dv_6d81c5ab/mvsplat360.png" alt="MVSplat360 extrapolation result for DL3DV">
+                <span class="method-detail-callout" aria-hidden="true"></span>
+                <span class="method-alignment-callout" aria-hidden="true"></span>
+              </div>
+              <div class="method-comparison-cell">
+                <img src="./method_comparison_extra/dl3dv_6d81c5ab/pixgr.png" alt="PixGR extrapolation result for DL3DV">
+                <span class="method-detail-callout" aria-hidden="true"></span>
+                <span class="method-alignment-callout" aria-hidden="true"></span>
+              </div>
+              <div class="method-comparison-cell">
+                <img src="./method_comparison_extra/dl3dv_6d81c5ab/gt.png" alt="Ground-truth DL3DV target view">
+                <span class="method-detail-callout" aria-hidden="true"></span>
+                <span class="method-alignment-callout" aria-hidden="true"></span>
+              </div>
+            </div>
+          </div>
+            </article>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    <section class="main-section efficiency-section" aria-labelledby="efficiency-heading">
+      <div class="container is-widescreen">
+        <h2 class="section-heading" id="efficiency-heading">PixGR keeps feed-forward efficiency.</h2>
+        <p class="section-copy efficiency-copy">
+          PixGR encodes the scene once into a latent, uses a lightweight generative decoder trained from scratch to produce a single global 3D Gaussian representation, and efficiently renders all novel views from it.
+        </p>
+        <figure class="efficiency-figure">
+          <img
+            src="./novel_view_time_scaling.png"
+            alt="Log-scale inference-time comparison as the number of novel views increases from 3 to 48"
+            loading="lazy"
+          >
+          <figcaption>Inference time versus the number of novel views on a single A100 GPU.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="main-section" aria-labelledby="comparison-heading">
+      <div class="container is-widescreen">
+        <h2 class="section-heading" id="comparison-heading">Qualitative Comparison</h2>
+
+        <div class="comparison-setting-groups">
+          <section class="comparison-setting-group" aria-labelledby="interpolation-comparison-heading">
+            <h3 class="comparison-setting-title" id="interpolation-comparison-heading">View Interpolation</h3>
+            <p class="comparison-setting-copy">Novel views lie within the observed context range.</p>
+            <div class="comparison-stack" data-setting-host="intra"></div>
+          </section>
+          <section class="comparison-setting-group" aria-labelledby="extrapolation-comparison-heading">
+            <h3 class="comparison-setting-title" id="extrapolation-comparison-heading">View Extrapolation</h3>
+            <p class="comparison-setting-copy">Novel views might lie outside the observed context range.</p>
+            <div class="comparison-stack" data-setting-host="extra"></div>
+          </section>
+        </div>
+
+        <template id="comparison-block-template">
+          <div class="comparison-shell comparison-block">
+            <div class="dataset-tabs" role="tablist" aria-label="Dataset">
+              <button class="dataset-tab active" type="button" role="tab" data-comparison="depthsplat" aria-selected="true">RE10K</button>
+              <button class="dataset-tab" type="button" role="tab" data-comparison="yonosplat" aria-selected="false">DL3DV</button>
+            </div>
+            <div class="comparison-gallery" aria-live="polite"></div>
+            <h4 class="comparison-block-title"></h4>
+            <div class="comparison-toolbar">
+              <div class="comparison-controls block-comparison-controls" hidden>
+                <button class="control-button block-previous-sample" type="button">
+                  <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <div class="sample-nav">
+                  <div class="sample-dots block-sample-dots"></div>
+                </div>
+                <button class="control-button block-next-sample" type="button">
+                  <i class="fa-solid fa-chevron-right"></i>
+                </button>
+              </div>
+            </div>
+            <p class="interaction-hint"><i class="fa-solid fa-left-right"></i> <span class="block-interaction-copy"></span></p>
+          </div>
+        </template>
+      </div>
+    </section>
+    <section class="main-section quantitative-section" aria-labelledby="quantitative-heading">
+      <div class="container is-widescreen">
+        <h2 class="section-heading" id="quantitative-heading">Quantitative Comparisons</h2>
+        <p class="section-copy">
+          PixGR is evaluated on both view interpolation and the more challenging view extrapolation setting. Best results are shown in bold purple and second-best results are underlined.
+        </p>
+
+        <div class="quantitative-shell">
+          <article class="quantitative-card" aria-labelledby="quantitative-interpolation-title">
+            <h3 class="quantitative-title" id="quantitative-interpolation-title">View Interpolation</h3>
+            <p class="quantitative-copy">2-view RE10K and 6-view DL3DV.</p>
+            <div class="quantitative-table-wrap" tabindex="0" role="region" aria-label="Scrollable interpolation results table">
+              <table class="quantitative-table">
+                <thead>
+                  <tr>
+                    <th rowspan="2" scope="col">Method</th>
+                    <th colspan="4" scope="colgroup">RE10K</th>
+                    <th colspan="4" scope="colgroup">DL3DV</th>
+                  </tr>
+                  <tr>
+                    <th scope="col">PSNR ↑</th>
+                    <th scope="col">SSIM ↑</th>
+                    <th scope="col">LPIPS ↓</th>
+                    <th scope="col">FID ↓</th>
+                    <th scope="col">PSNR ↑</th>
+                    <th scope="col">SSIM ↑</th>
+                    <th scope="col">LPIPS ↓</th>
+                    <th scope="col">FID ↓</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="quantitative-group"><td colspan="9">Regression-based Methods</td></tr>
+                  <tr><td>MVSplat</td><td>26.39</td><td>0.869</td><td>0.128</td><td>2.28</td><td>18.12</td><td>0.556</td><td>0.370</td><td>58.20</td></tr>
+                  <tr><td>DepthSplat</td><td class="result-second">27.47</td><td class="result-second">0.889</td><td class="result-second">0.114</td><td>2.29</td><td>24.19</td><td class="result-second">0.823</td><td class="result-second">0.147</td><td class="result-best">9.51</td></tr>
+                  <tr><td>AnySplat</td><td>19.80</td><td>0.682</td><td>0.274</td><td>2.88</td><td>19.03</td><td>0.554</td><td>0.235</td><td>16.94</td></tr>
+                  <tr><td>YoNoSplat</td><td>25.73</td><td>0.851</td><td>0.130</td><td>3.75</td><td class="result-second">24.83</td><td>0.821</td><td class="result-best">0.137</td><td>11.56</td></tr>
+                  <tr class="quantitative-group"><td colspan="9">Generative Methods</td></tr>
+                  <tr><td>latentSplat</td><td>23.89</td><td>0.813</td><td>0.163</td><td class="result-second">2.22</td><td>17.22</td><td>0.514</td><td>0.385</td><td>45.66</td></tr>
+                  <tr><td>MVSplat360</td><td>26.41</td><td>0.869</td><td>0.126</td><td>—</td><td>20.07</td><td>0.698</td><td>0.257</td><td>18.68</td></tr>
+                  <tr><td>ReconSplat</td><td>25.57</td><td>0.832</td><td>0.150</td><td>4.29</td><td>23.05</td><td>0.728</td><td>0.205</td><td>18.93</td></tr>
+                  <tr class="quantitative-ours"><td>PixGR</td><td class="result-best">28.54</td><td class="result-best">0.905</td><td class="result-best">0.104</td><td class="result-best">2.19</td><td class="result-best">25.27</td><td class="result-best">0.840</td><td class="result-second">0.147</td><td class="result-second">11.26</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <article class="quantitative-card" aria-labelledby="quantitative-extrapolation-title">
+            <h3 class="quantitative-title" id="quantitative-extrapolation-title">View Extrapolation</h3>
+            <p class="quantitative-copy">2-view RE10K and 4-view DL3DV.</p>
+            <div class="quantitative-table-wrap" tabindex="0" role="region" aria-label="Scrollable extrapolation results table">
+              <table class="quantitative-table">
+                <thead>
+                  <tr>
+                    <th rowspan="2" scope="col">Method</th>
+                    <th colspan="4" scope="colgroup">RE10K</th>
+                    <th colspan="4" scope="colgroup">DL3DV</th>
+                  </tr>
+                  <tr>
+                    <th scope="col">PSNR ↑</th>
+                    <th scope="col">SSIM ↑</th>
+                    <th scope="col">LPIPS ↓</th>
+                    <th scope="col">FID ↓</th>
+                    <th scope="col">PSNR ↑</th>
+                    <th scope="col">SSIM ↑</th>
+                    <th scope="col">LPIPS ↓</th>
+                    <th scope="col">FID ↓</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="quantitative-group"><td colspan="9">Regression-based Methods</td></tr>
+                  <tr><td>DepthSplat</td><td>22.02</td><td class="result-second">0.822</td><td>0.189</td><td>6.95</td><td>21.59</td><td>0.745</td><td>0.205</td><td>17.41</td></tr>
+                  <tr><td>AnySplat</td><td>16.21</td><td>0.621</td><td>0.351</td><td>5.98</td><td>14.84</td><td>0.449</td><td>0.426</td><td>22.16</td></tr>
+                  <tr><td>YoNoSplat</td><td>23.00</td><td>0.810</td><td>0.182</td><td>6.47</td><td class="result-second">23.04</td><td class="result-second">0.761</td><td class="result-second">0.192</td><td class="result-second">17.21</td></tr>
+                  <tr class="quantitative-group"><td colspan="9">Generative Methods</td></tr>
+                  <tr><td>latentSplat</td><td>22.62</td><td>0.777</td><td>0.196</td><td>2.79</td><td>18.35</td><td>0.564</td><td>0.345</td><td>37.65</td></tr>
+                  <tr><td>MVSplat360</td><td class="result-second">23.16</td><td>0.810</td><td>0.176</td><td class="result-best">1.79</td><td>17.91</td><td>0.609</td><td>0.335</td><td>18.23</td></tr>
+                  <tr><td>Bolt3D</td><td>23.13</td><td>0.806</td><td class="result-second">0.166</td><td>3.66</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+                  <tr><td>ReconSplat</td><td>23.98</td><td>0.795</td><td>0.184</td><td>4.49</td><td>21.23</td><td>0.673</td><td>0.249</td><td>23.02</td></tr>
+                  <tr class="quantitative-ours"><td>PixGR</td><td class="result-best">26.03</td><td class="result-best">0.872</td><td class="result-best">0.141</td><td class="result-second">2.75</td><td class="result-best">23.76</td><td class="result-best">0.802</td><td class="result-best">0.178</td><td class="result-best">12.78</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="flow-footer">
+    <p>
+      Project page for <strong>PixGR</strong>. Built with the
+      <a href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> project-page template.
+    </p>
+  </footer>
+
+  <script>
+    const methodOverviewVideo = document.querySelector("#method-overview-video");
+    if (methodOverviewVideo) {
+      const setMethodOverviewSpeed = () => {
+        methodOverviewVideo.defaultPlaybackRate = 2.5;
+        methodOverviewVideo.playbackRate = 2.5;
+      };
+      setMethodOverviewSpeed();
+      methodOverviewVideo.addEventListener("loadedmetadata", setMethodOverviewSpeed, { once: true });
+    }
+
+    const keyTargetRange = document.querySelector("#keytarget-range");
+    const keyTargetViewer = document.querySelector("#keytarget-viewer");
+    const keyTargetCount = document.querySelector("#keytarget-count");
+    const keyTargetTrajectory = document.querySelector("#keytarget-trajectory");
+    const keyTargetStatus = document.querySelector("#keytarget-viewer-status");
+    const keyTargetNovelVideo = document.querySelector("#keytarget-novel-video");
+    const keyTargetTotalPsnr = document.querySelector("#keytarget-total-psnr");
+    const keyTargetTotalTime = document.querySelector("#keytarget-total-time");
+    const keyTargetTicks = [...document.querySelectorAll(".keytarget-tick")];
+    const keyTargetPsnr = {
+      0: 24.293628692626953,
+      1: 24.67,
+      2: 25.16381072998047,
+      3: 25.384958267211914
+    };
+    const keyTargetTime = {
+      0: 0.11,
+      1: 0.34,
+      2: 0.40,
+      3: 0.47
+    };
+    // Frame 124 is the second evaluation target. Each reconstruction uses a
+    // different scene-normalization scale, so its matching pose is stored per k.
+    const keyTargetCameraW2c = {
+      0: [0.9352008595832488, -0.02889715220769924, 0.3529365833436076, -0.04274331027108261, 0.03841991083745058, 0.9990613855024401, -0.020004454357351736, 0.026517557034960886, -0.35202722594768204, 0.03226797341573998, 0.9354333967741092, -1.0040926222648392, 0, 0, 0, 1],
+      1: [0.9352008595832488, -0.02889715220769924, 0.3529365833436076, -0.03688926456657317, 0.03841991083745058, 0.9990613855024401, -0.020004454357351736, 0.022885760857498706, -0.35202722594768204, 0.03226797341573998, 0.9354333967741092, -0.8665739306843273, 0, 0, 0, 1],
+      2: [0.9352008595832488, -0.02889715220769924, 0.3529365833436076, -0.03149316790677462, 0.03841991083745058, 0.9990613855024401, -0.020004454357351736, 0.019538072060471312, -0.35202722594768204, 0.03226797341573998, 0.9354333967741092, -0.7398130221171397, 0, 0, 0, 1],
+      3: [0.9352008595832488, -0.02889715220769924, 0.3529365833436076, -0.02777280371721269, 0.03841991083745058, 0.9990613855024401, -0.020004454357351736, 0.017229992294027077, -0.35202722594768204, 0.03226797341573998, 0.9354333967741092, -0.6524171182625738, 0, 0, 0, 1]
+    };
+    const keyTargetNormalizedFocal = 218.96900939941406 / 256;
+    let activeKeyTarget = -1;
+
+    function keyTargetViewerUrl(count) {
+      const params = new URLSearchParams({
+        url: `../../gaussian_keytargets/k${count}.splat`,
+        is_object: "true",
+        fx: String(keyTargetNormalizedFocal),
+        fy: String(keyTargetNormalizedFocal),
+        w2c: keyTargetCameraW2c[count].join(",")
+      });
+      return `./gaussian_keytargets/viewer/index.html?${params}`;
+    }
+
+    function setKeyTarget(value) {
+      const count = Math.max(0, Math.min(3, Number(value)));
+      keyTargetRange.value = String(count);
+      keyTargetRange.style.setProperty("--keytarget-progress", `${count / 3 * 100}%`);
+      keyTargetCount.textContent = `k = ${count} target${count === 1 ? "" : "s"}`;
+      keyTargetTrajectory.src = `./gaussian_keytargets/trajectory_k${count}.png`;
+      keyTargetTrajectory.alt = `Camera trajectory for ${count} generated target view${count === 1 ? "" : "s"}`;
+      keyTargetNovelVideo.src = `./gaussian_keytargets/render_k${count}.mp4`;
+      keyTargetNovelVideo.setAttribute("aria-label", `Novel-view camera-path rendering with ${count} generated target view${count === 1 ? "" : "s"}`);
+      keyTargetNovelVideo.load();
+      keyTargetNovelVideo.play().catch(() => {});
+      keyTargetTotalPsnr.textContent = `PSNR ${keyTargetPsnr[count].toFixed(2)} dB`;
+      keyTargetTotalTime.textContent = `Time ${keyTargetTime[count].toFixed(2)} s`;
+      keyTargetTicks.forEach((tick) => {
+        const active = Number(tick.dataset.keytarget) === count;
+        tick.classList.toggle("active", active);
+        tick.setAttribute("aria-current", active ? "true" : "false");
+      });
+      if (count !== activeKeyTarget) {
+        activeKeyTarget = count;
+        keyTargetStatus.classList.remove("is-ready");
+        keyTargetStatus.textContent = `Loading k = ${count} reconstruction…`;
+        keyTargetViewer.title = `Interactive Gaussian reconstruction with ${count} generated target view${count === 1 ? "" : "s"}`;
+        keyTargetViewer.src = keyTargetViewerUrl(count);
+      }
+    }
+
+    keyTargetRange.addEventListener("input", (event) => setKeyTarget(event.target.value));
+    keyTargetTicks.forEach((tick) => {
+      tick.addEventListener("click", () => setKeyTarget(tick.dataset.keytarget));
+    });
+    keyTargetViewer.addEventListener("load", () => {
+      keyTargetStatus.classList.add("is-ready");
+      keyTargetStatus.textContent = "Gaussian reconstruction loaded at target frame 124";
+    });
+    setKeyTarget(0);
+
+    let allSamples = [];
+    // Keep the remaining copied YoNoSplat videos available, but do not show them.
+    const displayedRanks = {
+      yonosplat: {
+        intra: new Set([1, 2, 3]),
+        extra: new Set([2, 26, 36])
+      },
+      depthsplat: {
+        intra: new Set([105, 295, 151, 13, 45, 100]),
+        extra: new Set([4, 13, 14, 18, 22, 697, 80, 88, 98])
+      }
+    };
+
+    const comparisonModes = {
+      yonosplat: { baseline: "YoNoSplat", dataset: "DL3DV" },
+      depthsplat: { baseline: "DepthSplat", dataset: "RE10K" }
+    };
+    const comparisonRankOrder = {
+      depthsplat: {
+        intra: [295, 151, 45, 105, 13, 100]
+      }
+    };
+
+    const comparisonBlockTemplate = document.querySelector("#comparison-block-template");
+    const comparisonConfigurations = ["intra", "extra"];
+    comparisonConfigurations.forEach((setting) => {
+      const block = comparisonBlockTemplate.content.firstElementChild.cloneNode(true);
+      block.dataset.comparison = "depthsplat";
+      block.dataset.setting = setting;
+      document.querySelector(`[data-setting-host="${setting}"]`).appendChild(block);
+    });
+    const comparisonBlocks = [...document.querySelectorAll(".comparison-block")];
+    const regressorPairs = [...document.querySelectorAll(".regressor-drag-comparison")].map((container) => ({
+      container,
+      before: container.querySelector(".comparison-before"),
+      handle: container.querySelector(".slider-handle"),
+      range: container.querySelector(".comparison-range"),
+      pixgr: container.querySelector(".pixgr-video"),
+      baseline: container.querySelector(".baseline-video")
+    }));
+    const regressorVideos = regressorPairs.flatMap(({ pixgr, baseline }) => [pixgr, baseline]);
+
+    let regressorShouldPlay = true;
+    const comparisonStates = new Map(
+      comparisonBlocks.map((block) => [
+        block.dataset.setting,
+        {
+          block,
+          comparison: block.dataset.comparison,
+          setting: block.dataset.setting,
+          currentPage: 0,
+          shouldPlay: true,
+          pairs: [],
+          gallery: block.querySelector(".comparison-gallery"),
+          controls: block.querySelector(".block-comparison-controls"),
+          dots: block.querySelector(".block-sample-dots")
+        }
+      ])
+    );
+
+    function paintGaussianNoise(canvas) {
+      let state = Number(canvas.dataset.seed) || 1;
+      const random = () => {
+        state |= 0;
+        state = state + 0x6d2b79f5 | 0;
+        let value = Math.imul(state ^ state >>> 15, 1 | state);
+        value = value + Math.imul(value ^ value >>> 7, 61 | value) ^ value;
+        return ((value ^ value >>> 14) >>> 0) / 4294967296;
+      };
+      const gaussian = () => {
+        const u = Math.max(random(), Number.EPSILON);
+        const v = random();
+        return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+      };
+      const context = canvas.getContext("2d");
+      const image = context.createImageData(canvas.width, canvas.height);
+      for (let index = 0; index < image.data.length; index += 4) {
+        image.data[index] = Math.max(0, Math.min(255, 128 + 52 * gaussian()));
+        image.data[index + 1] = Math.max(0, Math.min(255, 128 + 52 * gaussian()));
+        image.data[index + 2] = Math.max(0, Math.min(255, 128 + 52 * gaussian()));
+        image.data[index + 3] = 255;
+      }
+      context.putImageData(image, 0, 0);
+    }
+
+    regressorPairs.forEach(({ container, before, handle, range, pixgr, baseline }) => {
+      range.addEventListener("input", () => {
+        const percentage = Math.max(0, Math.min(100, Number(range.value)));
+        before.style.width = percentage + "%";
+        handle.style.left = percentage + "%";
+      });
+      pixgr.addEventListener("timeupdate", () => {
+        if (Number.isFinite(baseline.duration) && Math.abs(baseline.currentTime - pixgr.currentTime) > 0.06) {
+          baseline.currentTime = Math.min(pixgr.currentTime, baseline.duration);
+        }
+      });
+      pixgr.addEventListener("ended", () => {
+        pixgr.currentTime = 0;
+        baseline.currentTime = 0;
+        if (regressorShouldPlay) {
+          Promise.allSettled([pixgr.play(), baseline.play()]);
+        }
+      });
+      requestAnimationFrame(() => {
+        container.style.setProperty("--comparison-width", container.getBoundingClientRect().width + "px");
+      });
+    });
+
+    function playRegressorVideos() {
+      regressorShouldPlay = true;
+      regressorPairs.forEach(({ pixgr, baseline }) => {
+        baseline.currentTime = pixgr.currentTime;
+        pixgr.play().catch(() => {});
+        baseline.play().catch(() => {});
+      });
+    }
+
+    function pauseRegressorVideos(preserveIntent = false) {
+      if (!preserveIntent) regressorShouldPlay = false;
+      regressorVideos.forEach((video) => video.pause());
+    }
+
+    async function playVisiblePairs(state) {
+      state.shouldPlay = true;
+      await Promise.allSettled(state.pairs.flatMap(({ pixgr, baseline }) => {
+        baseline.currentTime = pixgr.currentTime;
+        return [pixgr.play(), baseline.play()];
+      }));
+    }
+
+    function createComparisonCard(sample, state) {
+      const baselineName = comparisonModes[sample.comparison].baseline;
+      const card = document.createElement("article");
+      card.className = "comparison-card";
+      card.innerHTML = `
+        <div class="comparison-container">
+          <div class="comparison-item comparison-after">
+            <video class="pixgr-video" autoplay muted playsinline preload="metadata" aria-label="PixGR result for ${sample.setting} rank ${sample.rank}"></video>
+            <span class="comparison-label label-after">PixGR</span>
+          </div>
+          <div class="comparison-item comparison-before">
+            <video class="baseline-video" autoplay muted playsinline preload="metadata" aria-label="${baselineName} result for ${sample.setting} rank ${sample.rank}"></video>
+            <span class="comparison-label label-before">${baselineName}</span>
+          </div>
+          <input class="comparison-range" type="range" min="0" max="100" value="50" aria-label="Reveal ${baselineName} or PixGR">
+          <div class="slider-handle" aria-hidden="true">
+            <div class="slider-knob"><i class="fa-solid fa-left-right"></i></div>
+          </div>
+        </div>`;
+
+      const container = card.querySelector(".comparison-container");
+      const before = card.querySelector(".comparison-before");
+      const handle = card.querySelector(".slider-handle");
+      const range = card.querySelector(".comparison-range");
+      const pixgr = card.querySelector(".pixgr-video");
+      const baseline = card.querySelector(".baseline-video");
+      pixgr.src = "./" + sample.ours;
+      baseline.src = "./" + sample.baseline;
+
+      range.addEventListener("input", () => {
+        const percentage = Math.max(0, Math.min(100, Number(range.value)));
+        before.style.width = percentage + "%";
+        handle.style.left = percentage + "%";
+      });
+      pixgr.addEventListener("timeupdate", () => {
+        if (Number.isFinite(baseline.duration) && Math.abs(baseline.currentTime - pixgr.currentTime) > 0.06) {
+          baseline.currentTime = Math.min(pixgr.currentTime, baseline.duration);
+        }
+      });
+      pixgr.addEventListener("ended", () => {
+        pixgr.currentTime = 0;
+        baseline.currentTime = 0;
+        if (state.shouldPlay) {
+          Promise.allSettled([pixgr.play(), baseline.play()]);
+        }
+      });
+      requestAnimationFrame(() => {
+        container.style.setProperty("--comparison-width", container.getBoundingClientRect().width + "px");
+      });
+      return { card, pixgr, baseline, container };
+    }
+
+    function renderPageIndicators(state, pageCount) {
+      state.dots.replaceChildren();
+      for (let page = 0; page < pageCount; page += 1) {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "dot" + (page === state.currentPage ? " active" : "");
+        button.setAttribute("aria-label", `Show comparison page ${page + 1}`);
+        button.setAttribute("aria-current", page === state.currentPage ? "true" : "false");
+        button.addEventListener("click", () => {
+          state.currentPage = page;
+          renderComparisonBlock(state);
+        });
+        state.dots.appendChild(button);
+      }
+    }
+
+    function renderComparisonBlock(state) {
+      const samples = allSamples.filter(
+        (sample) => sample.comparison === state.comparison && sample.setting === state.setting
+      );
+      const preferredOrder = comparisonRankOrder[state.comparison]?.[state.setting];
+      if (preferredOrder) {
+        samples.sort((left, right) => preferredOrder.indexOf(left.rank) - preferredOrder.indexOf(right.rank));
+      }
+      state.pairs.forEach(({ pixgr, baseline }) => {
+        pixgr.pause();
+        baseline.pause();
+      });
+      const pageCount = Math.max(1, Math.ceil(samples.length / 3));
+      state.currentPage = (state.currentPage + pageCount) % pageCount;
+      const start = state.currentPage * 3;
+      const visibleSamples = samples.slice(start, start + 3);
+      state.pairs = visibleSamples.map((sample) => createComparisonCard(sample, state));
+      state.gallery.replaceChildren(...state.pairs.map(({ card }) => card));
+      state.gallery.classList.toggle("is-single", visibleSamples.length === 1);
+      state.controls.hidden = pageCount <= 1;
+      if (pageCount > 1) {
+        renderPageIndicators(state, pageCount);
+      }
+      if (state.shouldPlay) playVisiblePairs(state);
+    }
+
+    function setBlockDataset(state, comparison) {
+      const mode = comparisonModes[comparison];
+      state.comparison = comparison;
+      state.block.dataset.comparison = comparison;
+      state.currentPage = 0;
+      state.block.querySelectorAll(".dataset-tab").forEach((tab) => {
+        const active = tab.dataset.comparison === comparison;
+        tab.classList.toggle("active", active);
+        tab.setAttribute("aria-selected", active ? "true" : "false");
+      });
+      state.block.querySelector(".comparison-block-title").textContent = `PixGR vs. ${mode.baseline}`;
+      state.block.querySelector(".block-previous-sample").setAttribute("aria-label", `Previous ${mode.dataset} scenes`);
+      state.block.querySelector(".block-next-sample").setAttribute("aria-label", `Next ${mode.dataset} scenes`);
+      state.block.querySelector(".block-sample-dots").setAttribute("aria-label", `Choose ${mode.dataset} comparison page`);
+      state.block.querySelector(".block-interaction-copy").textContent = `Drag each image to compare PixGR and ${mode.baseline}`;
+      renderComparisonBlock(state);
+    }
+
+    async function initializeComparisons() {
+      try {
+        const [yonosplatResponse, depthsplatResponse] = await Promise.all([
+          fetch("./videos/comparisons/selection.json"),
+          fetch("./videos/depthsplat_comparisons/selection.json")
+        ]);
+        if (!yonosplatResponse.ok || !depthsplatResponse.ok) {
+          throw new Error("Could not load comparison manifest");
+        }
+        const [yonosplatManifest, depthsplatManifest] = await Promise.all([
+          yonosplatResponse.json(),
+          depthsplatResponse.json()
+        ]);
+        allSamples = [
+          ...yonosplatManifest.map((sample) => ({
+            ...sample,
+            comparison: "yonosplat",
+            baseline: sample.yonosplat
+          })),
+          ...depthsplatManifest.map((sample) => ({
+            ...sample,
+            comparison: "depthsplat"
+          }))
+        ].filter((sample) => displayedRanks[sample.comparison]?.[sample.setting]?.has(sample.rank));
+        comparisonStates.forEach((state) => setBlockDataset(state, "depthsplat"));
+      } catch (error) {
+        console.error(error);
+        comparisonStates.forEach((state) => {
+          state.gallery.textContent = "Comparison videos unavailable";
+        });
+      }
+    }
+
+    comparisonStates.forEach((state) => {
+      state.block.querySelectorAll(".dataset-tab").forEach((tab) => {
+        tab.addEventListener("click", () => setBlockDataset(state, tab.dataset.comparison));
+      });
+      state.block.querySelector(".block-previous-sample").addEventListener("click", () => {
+        state.currentPage -= 1;
+        renderComparisonBlock(state);
+      });
+      state.block.querySelector(".block-next-sample").addEventListener("click", () => {
+        state.currentPage += 1;
+        renderComparisonBlock(state);
+      });
+    });
+    window.addEventListener("resize", () => {
+      regressorPairs.forEach(({ container }) => {
+        container.style.setProperty("--comparison-width", container.getBoundingClientRect().width + "px");
+      });
+      comparisonStates.forEach((state) => {
+        state.pairs.forEach(({ container }) => {
+          container.style.setProperty("--comparison-width", container.getBoundingClientRect().width + "px");
+        });
+      });
+    });
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        pauseRegressorVideos(true);
+        comparisonStates.forEach((state) => {
+          state.pairs.forEach(({ pixgr, baseline }) => {
+            pixgr.pause();
+            baseline.pause();
+          });
+        });
+      } else {
+        if (regressorShouldPlay) playRegressorVideos();
+        comparisonStates.forEach((state) => {
+          if (state.shouldPlay) playVisiblePairs(state);
+        });
+      }
+    });
+
+    document.querySelectorAll(".gaussian-noise").forEach(paintGaussianNoise);
+    playRegressorVideos();
+    initializeComparisons();
+  </script>
+</body>
+</html>

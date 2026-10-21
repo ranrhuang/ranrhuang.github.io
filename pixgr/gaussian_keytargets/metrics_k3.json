@@ -1,0 +1,49 @@
+{
+  "summary": {
+    "num_scenes": 1,
+    "psnr": 25.384958267211914,
+    "ssim": 0.9317875504493713,
+    "lpips": 0.11618863791227341,
+    "ode_time_mean": 1.7506552934646606,
+    "fid": 57.87576782356415,
+    "mode": "unified_keytargets",
+    "num_key_targets": 3,
+    "target_strategy": "direct_json",
+    "generation_seed": 12,
+    "extrapolation_include_boundaries": false,
+    "render_video": true,
+    "save_gt_video": true,
+    "video_view_indices_path": null,
+    "video_camera_source": "dataset"
+  },
+  "per_scene": [
+    {
+      "scene": "b7f886ec9190aa7d/9_97",
+      "ode_time": 1.7506552934646606,
+      "key_target_frames": [
+        109,
+        124,
+        138
+      ],
+      "key_selection": "direct_json",
+      "psnr": 25.384958267211914,
+      "psnr_per_view": {
+        "109": 26.521589756011963,
+        "124": 25.077617168426514,
+        "138": 24.555668830871582
+      },
+      "ssim": 0.9317875504493713,
+      "ssim_per_view": {
+        "109": 0.9512307643890381,
+        "124": 0.9215518832206726,
+        "138": 0.9225799441337585
+      },
+      "lpips": 0.11618863791227341,
+      "lpips_per_view": {
+        "109": 0.08569325506687164,
+        "124": 0.12380160391330719,
+        "138": 0.13907106220722198
+      }
+    }
+  ]
+}

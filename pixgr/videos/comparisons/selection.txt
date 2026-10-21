@@ -1,0 +1,22 @@
+PixGR project-page qualitative video selections
+Selection source: PSNR-improvement ranking among scenes where ours wins PSNR, SSIM, and LPIPS.
+
+Interpolation (DL3DV 6-view intra): ranks 1, 2, 3, 24, 28, 34
+  rank   1: scene 457e9a1ae777b0c72be723aaeec971b39cc6d5d413d922f981ec9785395f7ca9, context 5_22_26_30_37_49
+  rank   2: scene 6d81c5ab0d480fd43d78b75ff372a8113ad38e2c03f1d69627c009883054d4c2, context 0_11_17_23_36_49
+  rank   3: scene c37726ce770ac50a2cf5c0f43022f0268e26da0d777cd8e3a3418c4eed03fd94, context 2_18_29_39_44_49
+  rank  24: scene 3b16a10ec9b4ab71580958b634485a979ffd6df0d368dbbf6fc1c5ffacf46b7a, context 0_15_27_38_44_49
+  rank  28: scene 2991a75d1f0fb2b7a891d424fc2459bb954b61599b52e74a056a7acfb2998b77, context 0_20_29_37_43_49
+  rank  34: scene 66fd66cbed40a2d11ecd17ae6d6d60cd60d476616864ecdd351fe69e644f30a1, context 0_11_21_32_41_49
+
+Extrapolation (DL3DV 4-view extra): ranks 2, 10, 26, 36, 37, 39, 44, 45, 47, 71
+  rank   2: scene 2385549d398bdfb55ed17b547c9846f0d01d571b4e050f90df707b577084fb55, context 11_19_25_38
+  rank  10: scene 8fdc5130f0731360cc053f59049bfe6db509567457c5471c970292966cb34f17, context 12_18_30_39
+  rank  26: scene 9cbc5548643ca9cfe797f871bac58bccd02f0510c49b7cb3697b38dfd780a508, context 7_14_26_38
+  rank  36: scene 4ff8650b5c1140e98d957fbd1abbe2cfbbb416b37cb9f06f7f376956703801bb, context 7_14_24_36
+  rank  37: scene d8de66037bd03dd0d39d54f9978bac3318d912e30e22c21e1ada82a98ed48c53, context 14_26_32_38
+  rank  39: scene 2991a75d1f0fb2b7a891d424fc2459bb954b61599b52e74a056a7acfb2998b77, context 20_29_37_43
+  rank  44: scene 50c46cf8b8b22c8d2ffdef8964b05ddbceaef312c9a9ff331d1ecebfd223f72a, context 11_23_29_36
+  rank  45: scene f7aaea9ac683bb1945cfeb1daa9abca3375249e0d19281a89a3f575040835464, context 13_24_31_37
+  rank  47: scene 14eb48a50e37df548894ab6d8cd628a21dae14bbe6c462e894616fc5962e6c49, context 13_25_31_38
+  rank  71: scene cbd44beb04f9c98f2d2c5affff89a6e0a72c25f1aa0c6f660fbd9e4d26702f8b, context 16_26_36_44

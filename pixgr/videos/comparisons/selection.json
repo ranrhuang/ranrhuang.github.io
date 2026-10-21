@@ -1,0 +1,164 @@
+[
+  {
+    "setting": "intra",
+    "setting_label": "Interpolation (DL3DV 6-view intra)",
+    "display_index": 1,
+    "rank": 1,
+    "scene_hash": "457e9a1ae777b0c72be723aaeec971b39cc6d5d413d922f981ec9785395f7ca9",
+    "context": "5_22_26_30_37_49",
+    "ours": "videos/comparisons/intra/01_rank_001_457e9a1ae777b0c72be723aaeec971b39cc6d5d413d922f981ec9785395f7ca9_ours.mp4",
+    "yonosplat": "videos/comparisons/intra/01_rank_001_457e9a1ae777b0c72be723aaeec971b39cc6d5d413d922f981ec9785395f7ca9_yonosplat.mp4",
+    "metrics": {
+      "ours": {
+        "psnr": 26.739534378051758,
+        "ssim": 0.8932215571403503,
+        "lpips": 0.11318828165531158
+      },
+      "yonosplat": {
+        "psnr": 24.169118690490723,
+        "ssim": 0.8271713304519653,
+        "lpips": 0.15139656707644464
+      },
+      "improvement": {
+        "psnr": 2.5704156875610344,
+        "ssim": 0.066050226688385,
+        "lpips": 0.038208285421133054
+      }
+    }
+  },
+  {
+    "setting": "intra",
+    "setting_label": "Interpolation (DL3DV 6-view intra)",
+    "display_index": 2,
+    "rank": 2,
+    "scene_hash": "6d81c5ab0d480fd43d78b75ff372a8113ad38e2c03f1d69627c009883054d4c2",
+    "context": "0_11_17_23_36_49",
+    "ours": "videos/comparisons/intra/02_rank_002_6d81c5ab0d480fd43d78b75ff372a8113ad38e2c03f1d69627c009883054d4c2_ours.mp4",
+    "yonosplat": "videos/comparisons/intra/02_rank_002_6d81c5ab0d480fd43d78b75ff372a8113ad38e2c03f1d69627c009883054d4c2_yonosplat.mp4",
+    "metrics": {
+      "ours": {
+        "psnr": 27.109407424926758,
+        "ssim": 0.8933366537094116,
+        "lpips": 0.09406179189682007
+      },
+      "yonosplat": {
+        "psnr": 24.630073852539063,
+        "ssim": 0.8404553508758545,
+        "lpips": 0.10792474463582039
+      },
+      "improvement": {
+        "psnr": 2.479333572387695,
+        "ssim": 0.052881302833557076,
+        "lpips": 0.013862952739000317
+      }
+    }
+  },
+  {
+    "setting": "intra",
+    "setting_label": "Interpolation (DL3DV 6-view intra)",
+    "display_index": 3,
+    "rank": 3,
+    "scene_hash": "c37726ce770ac50a2cf5c0f43022f0268e26da0d777cd8e3a3418c4eed03fd94",
+    "context": "2_18_29_39_44_49",
+    "ours": "videos/comparisons/intra/03_rank_003_c37726ce770ac50a2cf5c0f43022f0268e26da0d777cd8e3a3418c4eed03fd94_ours.mp4",
+    "yonosplat": "videos/comparisons/intra/03_rank_003_c37726ce770ac50a2cf5c0f43022f0268e26da0d777cd8e3a3418c4eed03fd94_yonosplat.mp4",
+    "metrics": {
+      "ours": {
+        "psnr": 23.834386825561523,
+        "ssim": 0.82289057970047,
+        "lpips": 0.13562262058258057
+      },
+      "yonosplat": {
+        "psnr": 21.540654258728026,
+        "ssim": 0.713205543756485,
+        "lpips": 0.17111796379089356
+      },
+      "improvement": {
+        "psnr": 2.293732566833498,
+        "ssim": 0.10968503594398493,
+        "lpips": 0.03549534320831299
+      }
+    }
+  },
+  {
+    "setting": "extra",
+    "setting_label": "Extrapolation (DL3DV 4-view extra)",
+    "display_index": 1,
+    "rank": 2,
+    "scene_hash": "2385549d398bdfb55ed17b547c9846f0d01d571b4e050f90df707b577084fb55",
+    "context": "11_19_25_38",
+    "ours": "videos/comparisons/extra/01_rank_002_2385549d398bdfb55ed17b547c9846f0d01d571b4e050f90df707b577084fb55_ours.mp4",
+    "yonosplat": "videos/comparisons/extra/01_rank_002_2385549d398bdfb55ed17b547c9846f0d01d571b4e050f90df707b577084fb55_yonosplat.mp4",
+    "metrics": {
+      "ours": {
+        "psnr": 24.88153839111328,
+        "ssim": 0.8573141694068909,
+        "lpips": 0.10688380897045135
+      },
+      "yonosplat": {
+        "psnr": 22.508794364929198,
+        "ssim": 0.754008457660675,
+        "lpips": 0.14772472605109216
+      },
+      "improvement": {
+        "psnr": 2.3727440261840833,
+        "ssim": 0.10330571174621583,
+        "lpips": 0.040840917080640804
+      }
+    }
+  },
+  {
+    "setting": "extra",
+    "setting_label": "Extrapolation (DL3DV 4-view extra)",
+    "display_index": 3,
+    "rank": 26,
+    "scene_hash": "9cbc5548643ca9cfe797f871bac58bccd02f0510c49b7cb3697b38dfd780a508",
+    "context": "7_14_26_38",
+    "ours": "videos/comparisons/extra/03_rank_026_9cbc5548643ca9cfe797f871bac58bccd02f0510c49b7cb3697b38dfd780a508_ours.mp4",
+    "yonosplat": "videos/comparisons/extra/03_rank_026_9cbc5548643ca9cfe797f871bac58bccd02f0510c49b7cb3697b38dfd780a508_yonosplat.mp4",
+    "metrics": {
+      "ours": {
+        "psnr": 23.126075744628906,
+        "ssim": 0.8157277703285217,
+        "lpips": 0.14097082614898682
+      },
+      "yonosplat": {
+        "psnr": 21.946675148010254,
+        "ssim": 0.7735695695877075,
+        "lpips": 0.15393850058317185
+      },
+      "improvement": {
+        "psnr": 1.1794005966186525,
+        "ssim": 0.04215820074081422,
+        "lpips": 0.012967674434185034
+      }
+    }
+  },
+  {
+    "setting": "extra",
+    "setting_label": "Extrapolation (DL3DV 4-view extra)",
+    "display_index": 4,
+    "rank": 36,
+    "scene_hash": "4ff8650b5c1140e98d957fbd1abbe2cfbbb416b37cb9f06f7f376956703801bb",
+    "context": "7_14_24_36",
+    "ours": "videos/comparisons/extra/04_rank_036_4ff8650b5c1140e98d957fbd1abbe2cfbbb416b37cb9f06f7f376956703801bb_ours.mp4",
+    "yonosplat": "videos/comparisons/extra/04_rank_036_4ff8650b5c1140e98d957fbd1abbe2cfbbb416b37cb9f06f7f376956703801bb_yonosplat.mp4",
+    "metrics": {
+      "ours": {
+        "psnr": 26.563901901245117,
+        "ssim": 0.8960078358650208,
+        "lpips": 0.11181458830833435
+      },
+      "yonosplat": {
+        "psnr": 25.557833251953124,
+        "ssim": 0.8569012427330017,
+        "lpips": 0.13308772690594195
+      },
+      "improvement": {
+        "psnr": 1.0060686492919935,
+        "ssim": 0.03910659313201903,
+        "lpips": 0.0212731385976076
+      }
+    }
+  }
+]
