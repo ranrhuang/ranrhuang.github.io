@@ -270,7 +270,8 @@
 
     #comparison-heading,
     #quantitative-heading,
-    #efficiency-heading {
+    #efficiency-heading,
+    #bibtex-heading {
       font-size: clamp(1.4rem, 2.2vw, 1.55rem);
       line-height: 1.25;
     }
@@ -1491,9 +1492,35 @@
       font-weight: 800;
     }
 
-    .result-best {
+    .quantitative-table td.result-best {
       color: #5b21b6;
       font-weight: 800;
+    }
+
+    .bibtex-section {
+      padding-top: 3rem;
+      background: #f8fafc;
+    }
+
+    .bibtex-shell {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .bibtex-code {
+      margin: 1.4rem 0 0;
+      padding: 1.25rem 1.4rem;
+      overflow-x: auto;
+      color: #1e293b;
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 1rem;
+      box-shadow: 0 14px 36px rgba(15, 23, 42, 0.07);
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 0.88rem;
+      line-height: 1.65;
+      text-align: left;
+      white-space: pre;
     }
 
     .result-second {
@@ -2146,7 +2173,7 @@
       </div>
 
       <div class="publication-links" aria-label="Publication resources">
-        <a class="publication-button primary" aria-disabled="true" title="Paper link coming soon">
+        <a class="publication-button primary" href="https://arxiv.org/abs/2610.31908" target="_blank" rel="noopener noreferrer">
           <i class="fa-regular fa-file-pdf" aria-hidden="true"></i>
           <span>Paper</span>
         </a>
@@ -2589,6 +2616,18 @@
           </article>
 
         </div>
+      </div>
+    </section>
+
+    <section class="main-section bibtex-section" aria-labelledby="bibtex-heading">
+      <div class="bibtex-shell">
+        <h2 class="section-heading" id="bibtex-heading">BibTeX</h2>
+        <pre class="bibtex-code"><code>@article{huang2026pixgr,
+  title   = {PixGR: Pixel-Space Generative Decoding for Fast Feed-Forward 3D Reconstruction},
+  author  = {Huang, Ranran and Bian, Wenjing and Luo, Weixun and Mao, Ye and Mikolajczyk, Krystian},
+  journal = {arXiv preprint arXiv:2610.31908},
+  year    = {2026}
+}</code></pre>
       </div>
     </section>
 
